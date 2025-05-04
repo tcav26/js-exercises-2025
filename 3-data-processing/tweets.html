@@ -1,19 +1,49 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tweets</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 900px; margin: auto; } /* Wider max-width for table */
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Table styling from original file, slightly enhanced */
+        #social-feed {
+            width: 100%;
+            border-collapse: collapse; /* Collapse borders */
+            margin-top: 15px;
+            font-size: 0.9em;
+            table-layout: fixed; /* Helps with column width consistency */
+            word-wrap: break-word; /* Break long words/text in cells */
+        }
+        #social-feed th, #social-feed td {
+            border: 1px solid #ddd; /* Light grey border */
+            padding: 8px; /* Add padding */
+            text-align: left; /* Align text left */
+            vertical-align: top; /* Align content to top */
+        }
+        #social-feed th {
+            background-color: #f2f2f2; /* Light grey background for header */
+            color: #333;
+            font-weight: bold;
+        }
+         /* Define approximate column widths */
+        #social-feed th:nth-child(1) { width: 15%; } /* Tweet ID */
+        #social-feed th:nth-child(2) { width: 40%; } /* Tweet Text */
+        #social-feed th:nth-child(3) { width: 15%; } /* User Screen Name */
+        #social-feed th:nth-child(4) { width: 15%; } /* User Followers */
+        #social-feed th:nth-child(5) { width: 15%; } /* Tweet Likes */
 
-     <style>
-        /*
-            STYLES FOR TABLE BORDERS (FEEL FREE TO UPDATE)
-            https://www.w3schools.com/html/html_table_borders.asp
-        */
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 5px;
+        #social-feed tr:nth-child(even) {
+            background-color: #f9f9f9; /* Zebra striping */
+        }
+        #social-feed tr:hover {
+            background-color: #e9ecef; /* Highlight row on hover */
         }
     </style>
 </head>
@@ -22,41 +52,28 @@
     <h1>Tweets</h1>
     <a href="../index.html">Home</a>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing</h2>
     <p>
-        Write JavaScript code to process the provided <code>tweets</code> variable to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to process the provided <code>tweets</code> variable to answer the questions below. Log each of the answers to the console.
         <ol type="A">
-            <li>Display the screen name of the user who authored the first tweet (i.e.  "@sandwoah").</li>
-            <li>Of all the tweets which include the phrase "@sandwoah" in their full text, display the screen name of the user who authored that tweet, each on a separate line (i.e. "user2", then "user3").</li>
-            <li> Of all the tweets which include the phrase "@sandwoah" in their full text, determine which tweet has the greatest number of likes, and then display the screen name of the user who authored that tweet (i.e. "user3").
-                <strong>NOTE:</strong> your solution should work regardless of what order the tweets are in.
-            </li>
+            <li>Display the screen name of the user who authored the first tweet (i.e. "@sandwoah").</li>
+            <li>Of all the tweets which include the phrase "@sandwoah" in their full text, display the screen name of the user who authored that tweet, each on a separate line.</li>
+            <li>Of all the tweets which include the phrase "@sandwoah" in their full text, determine which tweet has the greatest number of likes, and then display the screen name of the user who authored that tweet. <strong>NOTE:</strong> your solution should work regardless of what order the tweets are in.</li>
         </ol>
     </p>
 
-
     <hr>
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Sorted Tweets</h2>
     <p>
-        Write JavaScript code to process the provided <code>tweets</code> variable to answer the questions below.
-        Display the answers on the page in the designated places.
+        Write JavaScript code to process the provided <code>tweets</code> variable to answer the questions below. Display the answers on the page in the designated places.
         <ol type="A">
-            <li>Sort all of the tweets on the basis of likes count in descending order, so the tweet with the highest likes is first.</li>
-            <li>Display the sorted tweets in a table using the designated <code>table</code> element.
-                The table should have five columns:
-                "Tweet Id", "Tweet Text", "User Screen Name", "User Followers", and "Tweet Likes".
-                There should be a row for each tweet.
-                Include the tweet's id, full text, user screen name, user number of followers, and the tweet's likes count.
-            </li>
-
+            <li>Sort all of the tweets on the basis of likes count in descending order (highest likes first).</li>
+            <li>Display the sorted tweets in a table using the designated <code>table</code> element. The table should have five columns: "Tweet Id", "Tweet Text", "User Screen Name", "User Followers", and "Tweet Likes". Include a row for each tweet with its respective data.</li>
         </ol>
     </p>
 
     <table id="social-feed">
-    </table>
-
+         <thead></thead> <tbody></tbody> </table>
 
     <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
     <script type="text/javascript">
@@ -97,21 +114,122 @@
                 "user": {"screen_name": "user4", "followers": 400},
                 "likes_count": 50
             }
-        ]
+        ]; // Added semicolon
 
-        console.log("---------------------")
-        console.log("PART 1...")
+        console.log("---------------------");
+        console.log("PART 1: Processing Tweet Data");
+
+        // A: Display screen name of the user who authored the first tweet
+        // Check if tweets array is not empty
+        if (tweets.length > 0) {
+            console.log(`A. Screen name of first tweet author: @${tweets[0].user.screen_name}`);
+        } else {
+            console.log("A. No tweets available.");
+        }
+
+        // B: Filter tweets mentioning "@sandwoah" and display author screen names
+        const mentionTerm = "@sandwoah";
+        const mentionedTweets = tweets.filter(tweet => tweet.full_text.includes(mentionTerm));
+
+        console.log(`B. Authors of tweets mentioning "${mentionTerm}":`);
+        if (mentionedTweets.length > 0) {
+            mentionedTweets.forEach(tweet => {
+                console.log(`   - @${tweet.user.screen_name}`);
+            });
+        } else {
+            console.log(`   - No tweets found mentioning "${mentionTerm}".`);
+        }
 
 
+        // C: Find the tweet mentioning "@sandwoah" with the most likes and display author
+        let mostLikedMentionTweet = null;
+        if (mentionedTweets.length > 0) {
+            // Use reduce to find the tweet with the maximum likes_count
+            mostLikedMentionTweet = mentionedTweets.reduce((maxLikesTweet, currentTweet) => {
+                return currentTweet.likes_count > maxLikesTweet.likes_count ? currentTweet : maxLikesTweet;
+            }, mentionedTweets[0]); // Initialize with the first mentioned tweet
+
+             console.log(`C. Author of the most liked tweet mentioning "${mentionTerm}": @${mostLikedMentionTweet.user.screen_name} (${mostLikedMentionTweet.likes_count} likes)`);
+        } else {
+             console.log(`C. Cannot determine most liked tweet mentioning "${mentionTerm}" (none found).`);
+        }
 
 
+        console.log("---------------------");
+        console.log("PART 2: Displaying Sorted Tweets in Table");
+
+        // A: Sort tweets by likes_count in descending order
+        // Use slice() to create a shallow copy before sorting, preserving the original array
+        const sortedTweets = tweets.slice().sort((a, b) => {
+            // For descending order: b - a
+            return b.likes_count - a.likes_count;
+        });
+        console.log("Part 2A: Tweets sorted by likes (descending).");
 
 
-        console.log("---------------------")
-        console.log("PART 2...")
+        // B: Display sorted tweets in the table
+        const tableHeadTweets = document.querySelector("#social-feed thead");
+        const tableBodyTweets = document.querySelector("#social-feed tbody");
 
+        // Clear previous content
+        tableHeadTweets.innerHTML = '';
+        tableBodyTweets.innerHTML = '';
 
+        // --- Create Table Header ---
+        const tweetHeaders = ["Tweet Id", "Tweet Text", "User Screen Name", "User Followers", "Tweet Likes"];
+        const tweetHeaderRow = document.createElement("tr");
+        tweetHeaders.forEach(headerText => {
+            const th = document.createElement("th");
+            th.textContent = headerText;
+            tweetHeaderRow.appendChild(th);
+        });
+        tableHeadTweets.appendChild(tweetHeaderRow);
 
+        // --- Populate Table Body with Sorted Tweets ---
+        if (sortedTweets.length > 0) {
+            sortedTweets.forEach(tweet => {
+                const row = document.createElement("tr");
+
+                // Tweet ID
+                const cellId = document.createElement("td");
+                cellId.textContent = tweet.id;
+                row.appendChild(cellId);
+
+                // Tweet Text
+                const cellText = document.createElement("td");
+                cellText.textContent = tweet.full_text;
+                row.appendChild(cellText);
+
+                // User Screen Name (add '@' prefix)
+                const cellUser = document.createElement("td");
+                cellUser.textContent = `@${tweet.user.screen_name}`;
+                row.appendChild(cellUser);
+
+                // User Followers
+                const cellFollowers = document.createElement("td");
+                cellFollowers.textContent = tweet.user.followers;
+                row.appendChild(cellFollowers);
+
+                // Tweet Likes
+                const cellLikes = document.createElement("td");
+                cellLikes.textContent = tweet.likes_count;
+                row.appendChild(cellLikes);
+
+                // Append row to table body
+                tableBodyTweets.appendChild(row);
+            });
+             console.log("Part 2B: Sorted tweets displayed in the table.");
+        } else {
+             // Handle case with no tweets
+             const row = document.createElement("tr");
+             const cell = document.createElement("td");
+             cell.colSpan = tweetHeaders.length; // Span across all columns
+             cell.textContent = "No tweets to display.";
+             cell.style.textAlign = "center";
+             row.appendChild(cell);
+             tableBodyTweets.appendChild(row);
+             console.log("Part 2B: No tweets to display in the table.");
+        }
 
     </script>
 

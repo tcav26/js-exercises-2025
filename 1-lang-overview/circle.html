@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Area of a Circle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        label { margin-right: 5px; }
+        input[type="number"], button { padding: 8px; margin: 5px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { cursor: pointer; background-color: #007bff; color: white; border-color: #007bff; }
+        button:hover { background-color: #0056b3; }
+        #display-area { font-weight: bold; color: #28a745; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <h1>Area of a Circle</h1>
@@ -38,29 +52,88 @@
         and finally then display the area in the designated span element.
     </p>
 
-    <label>Radius:</label>
-    <input id="input-radius" type="number" placeholder="9" value="9"></input>
-    <button id="calculate">Calculate</button>
+    <div>
+        <label for="input-radius">Radius:</label>
+        <input id="input-radius" type="number" placeholder="9" value="9">
+        <button id="calculate">Calculate</button>
+    </div>
 
     <br>
-    <label>Area:</label>
-    <span id="display-area">TODO</span>
+    <div>
+        <label>Area:</label>
+        <span id="display-area"></span> </div>
 
 
     <script type="text/javascript">
 
-        console.log("---------------------")
-        console.log("PART 1...")
+        console.log("---------------------");
+        console.log("PART 1: Calculating Circle Area");
 
+        /**
+         * Calculates the area of a circle given its radius.
+         * @param {number} radius - The radius of the circle.
+         * @returns {number} The area of the circle.
+         */
+        function calculateCircleArea(radius) {
+            // Ensure the input is treated as a number
+            const numericRadius = Number(radius);
+            // Check if the conversion resulted in a valid number and if it's non-negative
+            if (isNaN(numericRadius) || numericRadius < 0) {
+                console.error("Invalid radius provided:", radius);
+                return NaN; // Return Not-a-Number for invalid input
+            }
+            // Calculate area: PI * r^2
+            return Math.PI * Math.pow(numericRadius, 2);
+        }
 
+        // Define the radius for Part 1
+        const givenRadius = 9;
+        // Calculate the area using the function
+        const calculatedArea = calculateCircleArea(givenRadius);
 
+        // Log the results for Part 1
+        console.log(`Radius provided: ${givenRadius}`);
+        // Check if the calculation was successful before logging the area
+        if (!isNaN(calculatedArea)) {
+             console.log(`Corresponding Area: ${calculatedArea}`);
+             // Optionally format to a few decimal places for cleaner logging
+             console.log(`Corresponding Area (rounded): ${calculatedArea.toFixed(2)}`);
+        }
 
+        console.log("---------------------");
+        console.log("PART 2: Interactive Area Calculation");
 
-        console.log("---------------------")
-        console.log("PART 2...")
+        // Get references to the HTML elements needed for interaction
+        const radiusInput = document.getElementById('input-radius');
+        const calculateButton = document.getElementById('calculate');
+        const displayAreaSpan = document.getElementById('display-area');
 
+        /**
+         * Handles the button click event to calculate and display the circle area.
+         */
+        function handleCalculation() {
+            // Get the current value from the radius input field
+            const radiusValue = radiusInput.value;
+            // Calculate the area using the function from Part 1
+            const area = calculateCircleArea(radiusValue); // Function handles string conversion and validation
 
+            // Display the result in the span element
+            // Check if the result is a valid number before displaying
+            if (!isNaN(area)) {
+                // Display the area, rounded to 2 decimal places for neatness
+                displayAreaSpan.textContent = area.toFixed(2);
+            } else {
+                // Display an error message if the input was invalid
+                displayAreaSpan.textContent = "Invalid input";
+            }
+        }
 
+        // Add an event listener to the button to trigger the calculation on click
+        calculateButton.addEventListener('click', handleCalculation);
+
+        // Optional: Perform an initial calculation on page load using the default input value
+        handleCalculation();
+        console.log("Initial area calculated based on default radius.");
 
 
     </script>

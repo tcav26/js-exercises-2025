@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt Generation</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Style console output examples */
+        .console-output {
+            background-color: #333;
+            color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap; /* Allows wrapping */
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Receipt Generation</h1>
@@ -58,27 +76,140 @@
         When logging, format all prices as USD, with dollar sign and rounded to two decimal places (using the function from Part 1),
         and format the tax rate as a percentage (using the function from Part 2).
     </p>
+    <p>Expected console output for Part 4:</p>
+    <div class="console-output">
+        Receipt Object Details:
+        Subtotal: $19.41
+        Tax Rate: 8.75%
+        Tax Amount: $1.70
+        Total: $21.11
+    </div>
 
 
     <script type="text/javascript">
 
-        console.log("---------------------")
-        console.log("PART 1...")
+        console.log("---------------------");
+        console.log("PART 1: Formatting Currency (USD)");
+
+        /**
+         * Formats a numeric price into a USD string (e.g., $12.34).
+         * @param {number} price - The numeric price to format.
+         * @returns {string} The price formatted as USD currency.
+         */
+        function formatUSD(price) {
+            // Convert input to number just in case
+            const numericPrice = Number(price);
+            if (isNaN(numericPrice)) {
+                console.error("Invalid price provided to formatUSD:", price);
+                return "$NaN"; // Indicate an error
+            }
+            // Use toFixed(2) for rounding and prepend "$"
+            return `$${numericPrice.toFixed(2)}`;
+        }
+
+        // Invoke the function for Part 1 test case
+        const testPrice = 4.6777;
+        const formattedPrice = formatUSD(testPrice);
+        console.log(`Original Price: ${testPrice}, Formatted USD: ${formattedPrice}`); // Expected: $4.68
+
+        console.log("---------------------");
+        console.log("PART 2: Formatting Percentages");
+
+        /**
+         * Formats a decimal percentage into a string (e.g., 8.75%).
+         * @param {number} percentage - The percentage in decimal format (e.g., 0.0875 for 8.75%).
+         * @returns {string} The percentage formatted as a string with a '%' sign.
+         */
+        function formatPct(percentage) {
+            // Convert input to number
+            const numericPercentage = Number(percentage);
+             if (isNaN(numericPercentage)) {
+                console.error("Invalid percentage provided to formatPct:", percentage);
+                return "NaN%"; // Indicate an error
+            }
+            // Multiply by 100, round to 2 decimals, and append "%"
+            return `${(numericPercentage * 100).toFixed(2)}%`;
+        }
+
+        // Invoke the function for Part 2 test case
+        const testPercentage = 0.0875;
+        const formattedPercentage = formatPct(testPercentage);
+        console.log(`Original Decimal: ${testPercentage}, Formatted Percentage: ${formattedPercentage}`); // Expected: 8.75%
+
+        console.log("---------------------");
+        console.log("PART 3: Calculating Tax and Total");
+
+        // Define constants for subtotal and tax rate
+        const subtotalPart3 = 19.41;
+        const taxRatePart3 = 0.0875; // 8.75%
+
+        // Calculate tax amount and total amount
+        const taxAmountPart3 = subtotalPart3 * taxRatePart3;
+        const totalAmountPart3 = subtotalPart3 + taxAmountPart3;
+
+        // Log the formatted results for Part 3
+        console.log(`Subtotal: ${formatUSD(subtotalPart3)}`);       // Expected: $19.41
+        console.log(`Tax Rate: ${formatPct(taxRatePart3)}`);         // Expected: 8.75%
+        console.log(`Tax Amount: ${formatUSD(taxAmountPart3)}`);     // Expected: $1.70 (approx)
+        console.log(`Total Amount: ${formatUSD(totalAmountPart3)}`); // Expected: $21.11 (approx)
 
 
+        console.log("---------------------");
+        console.log("PART 4: Generating Receipt Object");
 
+         /**
+         * Generates a receipt object containing subtotal, tax rate, tax amount, and total.
+         * @param {number} subtotal - The subtotal amount before tax.
+         * @param {number} [taxRate=0.0875] - The tax rate in decimal format (defaults to 8.75%).
+         * @returns {object|null} An object with receipt details {subtotal, taxRate, taxAmount, total}, or null if inputs are invalid.
+         */
+        function generateReceipt(subtotal, taxRate = 0.0875) {
+            const numericSubtotal = Number(subtotal);
+            const numericTaxRate = Number(taxRate);
 
-        console.log("---------------------")
-        console.log("PART 2...")
+            // Basic validation
+            if (isNaN(numericSubtotal) || isNaN(numericTaxRate) || numericSubtotal < 0 || numericTaxRate < 0) {
+                console.error("Invalid input provided to generateReceipt:", { subtotal, taxRate });
+                return null; // Return null to indicate failure
+            }
 
+            // Calculate tax and total
+            const taxAmount = numericSubtotal * numericTaxRate;
+            const total = numericSubtotal + taxAmount;
 
+            // Return the receipt details as an object
+            return {
+                subtotal: numericSubtotal,
+                taxRate: numericTaxRate,
+                taxAmount: taxAmount,
+                total: total
+            };
+        }
 
+        // Invoke the function for Part 4 test case
+        const subtotalPart4 = 19.41;
+        const receipt = generateReceipt(subtotalPart4); // Uses default tax rate
 
+        // Check if receipt generation was successful before logging
+        if (receipt) {
+            console.log("Receipt Object Details:");
+            console.log(`Subtotal: ${formatUSD(receipt.subtotal)}`);     // Expected: $19.41
+            console.log(`Tax Rate: ${formatPct(receipt.taxRate)}`);       // Expected: 8.75%
+            console.log(`Tax Amount: ${formatUSD(receipt.taxAmount)}`);   // Expected: $1.70
+            console.log(`Total: ${formatUSD(receipt.total)}`);           // Expected: $21.11
+        } else {
+            console.log("Failed to generate receipt due to invalid input.");
+        }
 
-        console.log("---------------------")
-        console.log("PART 3...")
-
-
+        // Example with a custom tax rate
+        console.log("\nReceipt with custom tax rate (10%):");
+        const receiptCustomTax = generateReceipt(100, 0.10); // Subtotal $100, Tax 10%
+         if (receiptCustomTax) {
+            console.log(`Subtotal: ${formatUSD(receiptCustomTax.subtotal)}`);
+            console.log(`Tax Rate: ${formatPct(receiptCustomTax.taxRate)}`);
+            console.log(`Tax Amount: ${formatUSD(receiptCustomTax.taxAmount)}`);
+            console.log(`Total: ${formatUSD(receiptCustomTax.total)}`);
+        }
 
 
     </script>

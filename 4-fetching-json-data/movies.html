@@ -4,6 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harry Potter Movies (JSON)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Display area styling */
+        #display-movie {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        #display-movie p { margin: 5px 0 10px 0; }
+        #display-movie span { font-weight: bold; color: #333; }
+        #select-movie { padding: 8px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ccc; min-width: 200px; }
+        #image-container img {
+            max-width: 200px; /* Limit image width */
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: block; /* Prevent extra space */
+        }
+        #image-container { min-height: 50px; } /* Ensure space even if no image */
+        .error-message { color: red; font-style: italic; }
+    </style>
 </head>
 <body>
 
@@ -12,94 +42,210 @@
 
     <h2>Dataset Information</h2>
     <p>For this exercise, we will use a JSON file called
-        <a href="https://raw.githubusercontent.com/prof-rossetti/internet-technologies/refs/heads/main/data/hp-movies.json">"hp-movies.json"</a>.
-        that has been uploaded to the Internet.
-        The JSON file contains information about Harry Potter movies.
+        <a href="https://raw.githubusercontent.com/prof-rossetti/internet-technologies/refs/heads/main/data/hp-movies.json" target="_blank" rel="noopener noreferrer">"hp-movies.json"</a>
+        that has been uploaded to the Internet. The JSON file contains information about Harry Potter movies.
     </p>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing (Console)</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to answer the questions below. Log each of the answers to the console.
         <ol type="A">
             <li>Fetch the movie data using the provided URL.</li>
             <li>Display the number of movies (i.e. 8).</li>
             <li>Loop through the movies, and display the title and year of each.</li>
-            <li>Perform a sorting operation to identify the movie that has the highest rating.
-                Display the name and rating of that movie.
-            </li>
+            <li>Perform a sorting operation to identify the movie that has the highest rating. Display the name and rating of that movie.</li>
         </ol>
     </p>
 
-
-    <h2>Part 2</h2>
+    <h2>Part 2: Interactive Display</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
+        Write JavaScript code to answer the questions below. Display the answers on the page in the designated areas.
     </p>
-
     <ol type="A">
-        <li>See the provided a movie selector dropdown menu (i.e the designated <code>select</code> element).
-            Loop through the movies and dynamically create a new <code>option</code> element for each movie.
-            Use the movie's identifier as the option value, and the movie's title as the option text.
-        </li>
-        <li>Create a function called <code>updateMovieInfo</code>.
-            It should identify what movie is currently selected from the dropdown menu,
-            then lookup the corresponding movie information using a find operation,
-            and finally display information about that movie in the designated areas below.
-            Specifically it should display the movie title, year, rating, and an image of the movie poster.
-        </li>
-        <li>Add an event listener to the dropdown, such that when a new option is selected,
-            it will invoke the <code>updateMovieInfo</code> function.
-            As a result, you should be able to select different movies from the dropdown to see the corresponding info on the page.
-        </li>
-
+        <li>See the provided movie selector dropdown menu. Loop through the movies and dynamically create a new <code>option</code> element for each movie. Use the movie's identifier as the option value, and the movie's title as the option text.</li>
+        <li>Create a function called <code>updateMovieInfo</code>. It should identify what movie is currently selected from the dropdown menu, then lookup the corresponding movie information using a find operation, and finally display information about that movie in the designated areas below (title, year, rating, poster image).</li>
+        <li>Add an event listener to the dropdown, such that when a new option is selected, it will invoke the <code>updateMovieInfo</code> function.</li>
     </ol>
 
     <hr>
     <h2>Display</h2>
 
     <select id="select-movie" name="movie">
-        <option value="N/A">Select a Movie</option>
-    </select>
+        <option value="">--- Select a Movie ---</option> </select>
+
     <div id="display-movie">
-        <p>Title: <span id="display-title">TODO</span></p>
-        <p>Year: <span id="display-year">TODO</span></p>
-        <p>Rating: <span id="display-rating">X</span> / 10</p>
-        <p>Thumbnail Image:</p>
-        <div id="image-container"></div>
+        <p>Title: <span id="display-title">N/A</span></p> <p>Year: <span id="display-year">N/A</span></p> <p>Rating: <span id="display-rating">N/A</span> / 10</p> <p>Thumbnail Image:</p>
+        <div id="image-container">
+            <p id="no-image-message" style="font-style: italic; color: #666;">(Select a movie to see poster)</p>
+        </div>
     </div>
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
     <script type="text/javascript">
 
-        var requestUrl = "https://raw.githubusercontent.com/prof-rossetti/internet-technologies/refs/heads/main/data/hp-movies.json"
+        const requestUrl = "https://raw.githubusercontent.com/prof-rossetti/internet-technologies/refs/heads/main/data/hp-movies.json";
+        let movieData = []; // Variable to store fetched movie data globally within the script scope
 
-        fetch(requestUrl).then(response => response.json())
-            .then(function(data){
-                console.log("DATA", data)
+        // Get references to DOM elements
+        const movieSelect = document.getElementById('select-movie');
+        const titleSpan = document.getElementById('display-title');
+        const yearSpan = document.getElementById('display-year');
+        const ratingSpan = document.getElementById('display-rating');
+        const imageContainer = document.getElementById('image-container');
+        const noImageMsg = document.getElementById('no-image-message');
+        const displayMovieDiv = document.getElementById('display-movie'); // Reference to the container div for errors
 
+        // Fetch the data from the URL
+        fetch(requestUrl)
+            .then(response => {
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Parse the JSON from the response
+            })
+            .then(function(data) {
+                console.log("DATA fetched successfully:", data);
+                // Basic validation of received data structure
+                if (!Array.isArray(data)) {
+                    throw new Error("Fetched data is not an array as expected.");
+                }
+                movieData = data; // Store the data for later use
 
-                console.log("---------------------")
-                console.log("PART 1...")
+                // --- PART 1: Console Logging ---
+                console.log("---------------------");
+                console.log("PART 1: Processing Movie Data (Console)");
 
+                // B: Display the number of movies
+                const numberOfMovies = movieData.length;
+                console.log(`B. Number of movies: ${numberOfMovies}`);
 
+                // C: Loop through movies and display title and year
+                console.log("C. Movie Titles and Years:");
+                movieData.forEach(movie => {
+                    // *** CORRECTED PROPERTY NAMES (Title, Year) ***
+                    console.log(`   - ${movie.Title || 'MISSING TITLE'} (${movie.Year || 'MISSING YEAR'})`);
+                });
 
+                // D: Find the movie with the highest rating
+                if (numberOfMovies > 0) {
+                    // Sort a copy of the array by rating descending
+                    // Ensure rating is treated as a number
+                    // *** CORRECTED PROPERTY NAME (Rating) ***
+                    const sortedByRating = [...movieData].sort((a, b) => Number(b.Rating) - Number(a.Rating));
+                    const highestRatedMovie = sortedByRating[0];
+                    // *** CORRECTED PROPERTY NAMES (Title, Rating) ***
+                    console.log(`D. Highest Rated Movie: ${highestRatedMovie.Title || 'N/A'} (Rating: ${highestRatedMovie.Rating || 'N/A'}/10)`);
+                } else {
+                    console.log("D. Cannot determine highest rated movie (no data).");
+                }
 
+                // --- PART 2: Interactive Display ---
+                console.log("---------------------");
+                console.log("PART 2: Setting up Interactive Display");
 
+                // A: Populate the dropdown menu
+                populateDropdown();
 
-                console.log("---------------------")
-                console.log("PART 2...")
-
-
-
-
+                // C: Add event listener to the dropdown
+                movieSelect.addEventListener('change', updateMovieInfo);
 
             })
-            .catch(err => console.log(err))
+            .catch(error => {
+                // Handle errors during the fetch process
+                console.error("Fetch Error:", error);
+                // Display an error message to the user on the page
+                displayMovieDiv.innerHTML = `<p class="error-message">Could not load movie data: ${error.message}</p>`;
+            });
+
+        /**
+         * Populates the movie selection dropdown menu.
+         */
+        function populateDropdown() {
+            if (!Array.isArray(movieData) || movieData.length === 0) {
+                 console.warn("Cannot populate dropdown, movieData is empty or invalid.");
+                 return;
+            }
+            console.log("Populating dropdown...");
+            movieData.forEach((movie, index) => {
+                const option = document.createElement('option');
+                // *** CORRECTED PROPERTY NAMES (Id, Title) ***
+                option.value = movie.Id !== undefined ? movie.Id : ''; // Use empty string if id is missing
+                option.textContent = movie.Title || 'Untitled Movie'; // Use placeholder if title is missing
+                movieSelect.appendChild(option);
+            });
+            console.log("Part 2A: Dropdown populated.");
+        }
+
+        /**
+         * Updates the displayed movie information based on the dropdown selection.
+         */
+        function updateMovieInfo() {
+            const selectedMovieId = movieSelect.value;
+            console.log(`Part 2B/C: Dropdown changed. Selected Movie ID: ${selectedMovieId}`);
+
+            // Check if the value is undefined or null
+            if (selectedMovieId === undefined || selectedMovieId === null) {
+                console.error("Error: Selected movie ID is undefined or null. Resetting display.");
+                titleSpan.textContent = "N/A";
+                yearSpan.textContent = "N/A";
+                ratingSpan.textContent = "N/A";
+                imageContainer.innerHTML = '';
+                if(noImageMsg) noImageMsg.style.display = 'block';
+                return;
+            }
+
+            // Clear previous image and message
+            imageContainer.innerHTML = '';
+            if (noImageMsg) noImageMsg.style.display = 'none';
+
+            // Handle the default "Select a Movie" option (value="")
+            if (selectedMovieId === "") {
+                console.log("Default option selected. Resetting display.");
+                titleSpan.textContent = "N/A";
+                yearSpan.textContent = "N/A";
+                ratingSpan.textContent = "N/A";
+                if (noImageMsg) noImageMsg.style.display = 'block';
+                return;
+            }
+
+            // Find the selected movie object using the ID
+            // *** CORRECTED PROPERTY NAME (Id) ***
+            const selectedMovie = movieData.find(movie => String(movie.Id) === selectedMovieId);
+
+            if (selectedMovie) {
+                 // *** CORRECTED PROPERTY NAMES (Title, Year, Rating) ***
+                console.log("Found movie:", selectedMovie.Title);
+                titleSpan.textContent = selectedMovie.Title || 'N/A';
+                yearSpan.textContent = selectedMovie.Year || 'N/A';
+                ratingSpan.textContent = selectedMovie.Rating || 'N/A';
+
+                // Update the image
+                // *** CORRECTED PROPERTY NAME (Thumbnail Image URL) ***
+                const imageUrl = selectedMovie["Thumbnail Image URL"]; // Access using bracket notation due to spaces
+                if (imageUrl) {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                     // *** CORRECTED PROPERTY NAME (Title) ***
+                    img.alt = `Poster for ${selectedMovie.Title || 'movie'}`;
+                    img.onerror = function() {
+                        console.warn(`Image failed to load: ${imageUrl}`);
+                        this.alt = `${selectedMovie.Title || 'Movie'} (Poster image not available)`;
+                         imageContainer.innerHTML = `<p style="font-style: italic; color: #666;">(Poster image not available)</p>`;
+                    };
+                     imageContainer.appendChild(img);
+                } else {
+                     imageContainer.innerHTML = `<p style="font-style: italic; color: #666;">(No poster image available for this movie)</p>`;
+                }
+
+            } else {
+                console.error(`Could not find movie with ID: ${selectedMovieId}`);
+                titleSpan.textContent = "Error";
+                yearSpan.textContent = "Error";
+                ratingSpan.textContent = "Error";
+                imageContainer.innerHTML = `<p class="error-message">Error loading details for movie ID ${selectedMovieId}.</p>`;
+            }
+        }
 
     </script>
 </body>

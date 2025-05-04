@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temperature Conversion</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        label { margin-right: 5px; }
+        input[type="number"], button { padding: 8px; margin: 5px 0; border-radius: 4px; border: 1px solid #ccc; }
+        button { cursor: pointer; background-color: #007bff; color: white; border-color: #007bff; }
+        button:hover { background-color: #0056b3; }
+        #display-temp-f { font-weight: bold; color: #dc3545; } /* Red for Fahrenheit */
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <h1>Temperature Conversion</h1>
@@ -50,38 +63,100 @@
         and finally then display the Fahrenheit temperature in the designated span element.
     </p>
 
-    <label>Celsius Temperature:</label>
-    <input id="input-temp-c" type="number" placeholder="-270" value="-270"></input>
-    <button id="calculate">Calculate</button>
+    <div>
+        <label for="input-temp-c">Celsius Temperature:</label>
+        <input id="input-temp-c" type="number" placeholder="-270" value="-270">
+        <button id="calculate">Calculate</button>
+    </div>
 
     <br>
-    <label>Fahrenheit Temperature:</label>
-    <span id="display-temp-f">TODO</span>
+    <div>
+        <label>Fahrenheit Temperature:</label>
+        <span id="display-temp-f"></span> </div>
 
 
     <script type="text/javascript">
 
-        console.log("---------------------")
-        console.log("PART 1...")
+        console.log("---------------------");
+        console.log("PART 1: Direct Temperature Conversion");
+
+        // Define the Celsius temperature
+        const celsiusTempPart1 = -270;
+        // Apply the conversion formula: F = (9/5)C + 32
+        const fahrenheitTempPart1 = (9 / 5) * celsiusTempPart1 + 32;
+
+        // Log both temperatures
+        console.log(`Celsius: ${celsiusTempPart1}°C`);
+        console.log(`Fahrenheit: ${fahrenheitTempPart1}°F`); // Expected: -454°F
+
+        console.log("---------------------");
+        console.log("PART 2: Functional Temperature Conversion");
+
+        /**
+         * Converts a temperature from Celsius to Fahrenheit.
+         * @param {number|string} tempC - The temperature in Celsius.
+         * @returns {number} The corresponding temperature in Fahrenheit. Returns NaN if input is invalid.
+         */
+        function calculateTemp(tempC) {
+            // Convert input to a number
+            const numericTempC = Number(tempC);
+            // Check if the conversion resulted in a valid number
+            if (isNaN(numericTempC)) {
+                console.error("Invalid Celsius temperature provided:", tempC);
+                return NaN; // Return Not-a-Number for invalid input
+            }
+            // Apply the conversion formula
+            return (9 / 5) * numericTempC + 32;
+        }
+
+        // Define the Celsius temperature for Part 2
+        const celsiusTempPart2 = -270;
+        // Convert using the function
+        const fahrenheitTempPart2 = calculateTemp(celsiusTempPart2);
+
+        // Log both temperatures for Part 2
+        console.log(`Function Input (Celsius): ${celsiusTempPart2}°C`);
+        // Check if the result is valid before logging
+        if (!isNaN(fahrenheitTempPart2)) {
+            console.log(`Function Output (Fahrenheit): ${fahrenheitTempPart2}°F`); // Expected: -454°F
+            // Optionally log rounded value
+            console.log(`Function Output (Fahrenheit, rounded): ${fahrenheitTempPart2.toFixed(2)}°F`);
+        }
 
 
+        console.log("---------------------");
+        console.log("PART 3: Interactive Temperature Conversion");
 
+        // Get references to the HTML elements
+        const celsiusInput = document.getElementById('input-temp-c');
+        const calculateButtonTemp = document.getElementById('calculate'); // Renamed to avoid conflict if scripts were combined
+        const displayFahrenheitSpan = document.getElementById('display-temp-f');
 
+        /**
+         * Handles the button click event to convert Celsius input to Fahrenheit and display it.
+         */
+        function handleTempConversion() {
+            // Get the value from the Celsius input field
+            const celsiusValue = celsiusInput.value;
+            // Convert the temperature using the function from Part 2
+            const fahrenheitValue = calculateTemp(celsiusValue); // Function handles conversion and validation
 
-        console.log("---------------------")
-        console.log("PART 2...")
+            // Display the result in the span element
+            if (!isNaN(fahrenheitValue)) {
+                // Display the Fahrenheit temperature, rounded to 2 decimal places
+                displayFahrenheitSpan.textContent = `${fahrenheitValue.toFixed(2)}°F`;
+            } else {
+                // Display an error message if the input was invalid
+                displayFahrenheitSpan.textContent = "Invalid input";
+            }
+        }
 
+        // Add an event listener to the button
+        calculateButtonTemp.addEventListener('click', handleTempConversion);
 
-
-
-
-
-        console.log("---------------------")
-        console.log("PART 3...")
-
-
-
-
+        // Optional: Perform an initial conversion on page load using the default input value
+        handleTempConversion();
+        console.log("Initial Fahrenheit temperature calculated based on default Celsius.");
 
     </script>
 </body>

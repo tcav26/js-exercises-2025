@@ -2,7 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Overview (JSON)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Input/Button styling */
+        #input-symbol, #lookup { padding: 8px; margin: 5px 0; border-radius: 4px; border: 1px solid #ccc; }
+        #lookup { cursor: pointer; background-color: #007bff; color: white; border-color: #007bff; margin-left: 5px; }
+        #lookup:hover { background-color: #0056b3; }
+        /* Display area styling */
+        #display-company-info {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        #display-company-info p { margin: 5px 0 10px 0; }
+        #display-company-info span, #display-company-info a { font-weight: bold; color: #333; }
+        #display-description { font-weight: normal; display: block; margin-top: 5px; } /* Make description normal weight and block */
+        .error-message { color: red; font-style: italic; }
+    </style>
 </head>
 <body>
 
@@ -10,118 +36,196 @@
     <a href="../index.html">Home</a>
 
     <h2>Dataset Information</h2>
-    <p>For this exercise, we will use data from the AlphaVantage API.
-        Specifically we will use the <a href="https://www.alphavantage.co/documentation/#company-overview">"Company Overview" endpoint</a>
-        to fetch financial information about a given company.
-        Consult the API documentation to learn more.
-    </p>
+    <p>For this exercise, we will use data from the AlphaVantage API. Specifically we will use the <a href="https://www.alphavantage.co/documentation/#company-overview" target="_blank" rel="noopener noreferrer">"Company Overview" endpoint</a> to fetch financial information about a given company. Consult the API documentation to learn more.</p>
 
     <h2>Setup</h2>
     <p>First obtain an AlphaVantage API Key, and supply it when prompted.</p>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing (Console)</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to answer the questions below. Log each of the answers to the console.
         <ol type="A">
             <li>Define a function called <code>lookupCompany</code>. It should:
                 <ul>
-                    <li>Identify the stock symbol that has been input into the provided <code>input</code> element, and store it in a variable called <code>symbol</code>.</li>
-                    <li>Dynamically compile a request URL for the specified company, and store it in a variable called <code>requestUrl</code>.
-                    <li>Fetch information about the specified company using the specified request URL.</li>
-                    <li>Display information about the company, including its:
-                        name (i.e. "Netflix Inc"), description, and website URL.
-                    </li>
+                    <li>Identify the stock symbol from the input element.</li>
+                    <li>Dynamically compile the request URL.</li>
+                    <li>Fetch information using the URL.</li>
+                    <li>Display company name, description, and website URL in the console.</li>
                 </ul>
             </li>
-            <li>Invoke the function once when the page initially loads (no need for an event listener).</li>
-            <li>Add an event listener to also invoke the function whenever the "Lookup" button is clicked. </li>
+            <li>Invoke the function once when the page initially loads.</li>
+            <li>Add an event listener to invoke the function when the "Lookup" button is clicked.</li>
         </ol>
     </p>
 
-
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Company Info</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
+        Write JavaScript code to answer the questions below. Display the answers on the page in the designated areas.
     </p>
-
     <ol type="A">
         <li>Revisit the <code>lookupCompany</code> function from Part 1. It should also:</li>
             <ul>
-                <li>Display the company's name in the provided <code>span</code> element.</li>
-                <li>Display the company's description in the provided <code>span</code> element.</li>
-                <li>Display a hyperlink to the company's website in the provided <code>a</code> element. The link's text and <code>href</code> attribute should both be the website URL.</li>
+                <li>Display the company's name in the <code>#display-name</code> span.</li>
+                <li>Display the company's description in the <code>#display-description</code> span.</li>
+                <li>Display a hyperlink to the company's website in the <code>#display-link</code> anchor element.</li>
             </ul>
     </ol>
 
     <hr>
     <h2>Display</h2>
 
-    <label>Stock Symbol:</label>
-    <input id="input-symbol" type="text" placeholder="NFLX" value="NFLX"></input>
+    <label for="input-symbol">Stock Symbol:</label>
+    <input id="input-symbol" type="text" placeholder="NFLX" value="NFLX">
     <button id="lookup">Lookup</button>
 
     <div id="display-company-info">
-        <p>Name: <span id="display-name">TODO</span></p>
-        <p>Description: <span id="display-description">TODO</span></p>
-        <p>Website: <a id="display-link" href="#TODO">TODO</span></p>
-    </div>
-
-
-
+        <p>Name: <span id="display-name">Loading...</span></p>
+        <p>Description: <span id="display-description">Loading...</span></p>
+        <p>Website: <a id="display-link" href="#" target="_blank" rel="noopener noreferrer">Loading...</a></p> </div>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script type="text/javascript">
 
+        // --- API Key Handling ---
         // AVOID HARD-CODING THE CREDENTIALS
         // USE SESSION STORAGE TO MINIMIZE THE NUMBER OF TIMES WE HAVE TO PROVIDE THE CREDENTIAL
-        // check session storage for the API Key:
-        var apiKey = sessionStorage.getItem("ALPHAVANTAGE_API_KEY")
+        var apiKey = sessionStorage.getItem("ALPHAVANTAGE_API_KEY");
         if (!apiKey) {
-            // if it isn't there, ask the user to supply it:
-            apiKey = prompt("Please enter your AlphaVantage API key:")
-            // store it in the session for later (so it will persist after refreshing the page)
-            sessionStorage.setItem("ALPHAVANTAGE_API_KEY", apiKey)
+            apiKey = prompt("Please enter your AlphaVantage API key:");
+            if (apiKey) { // Only store if user provided a key
+                sessionStorage.setItem("ALPHAVANTAGE_API_KEY", apiKey);
+            } else {
+                 console.error("API Key not provided. Functionality may be limited.");
+                 // Optionally display an error on the page
+                 document.getElementById('display-company-info').innerHTML = '<p class="error-message">AlphaVantage API Key not provided. Please refresh and enter your key.</p>';
+            }
         }
 
+        // --- DOM Element References ---
+        const inputSymbol = document.getElementById('input-symbol');
+        const lookupButton = document.getElementById('lookup');
+        const displayNameSpan = document.getElementById('display-name');
+        const displayDescriptionSpan = document.getElementById('display-description');
+        const displayLink = document.getElementById('display-link');
+        const displayContainer = document.getElementById('display-company-info');
 
 
-        // FUNCTION DEFINITION
+        // --- FUNCTION DEFINITION ---
+        /**
+         * Fetches company overview data from AlphaVantage API based on the input symbol
+         * and updates the console and the page display.
+         */
         function lookupCompany() {
-            var symbol = inputSymbol.value
-            console.log("SYMBOL:", symbol)
+            // Clear previous results/errors on new lookup
+            displayNameSpan.textContent = "Loading...";
+            displayDescriptionSpan.textContent = "Loading...";
+            displayLink.textContent = "Loading...";
+            displayLink.href = "#"; // Reset link href
 
-            var requestUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`
+            // Check if API key is available before proceeding
+             if (!apiKey) {
+                 console.error("Cannot lookup company: API Key is missing.");
+                 displayContainer.innerHTML = '<p class="error-message">Cannot perform lookup: AlphaVantage API Key is missing.</p>';
+                 return; // Stop execution
+             }
+
+            // A-i: Identify the stock symbol
+            const symbol = inputSymbol.value.trim().toUpperCase(); // Get value, trim whitespace, convert to uppercase
+             if (!symbol) {
+                 console.warn("Please enter a stock symbol.");
+                 displayNameSpan.textContent = "Please enter a symbol.";
+                 displayDescriptionSpan.textContent = "";
+                 displayLink.textContent = "";
+                 return; // Stop if symbol is empty
+             }
+            console.log("Looking up symbol:", symbol);
+
+            // A-ii: Dynamically compile the request URL
+            const requestUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`;
+            console.log("Request URL:", requestUrl);
+
+            // A-iii: Fetch information using d3.json
             d3.json(requestUrl).then(function(data) {
-                console.log("RESPONSE:", data)
+                console.log("API Response:", data);
 
-                console.log("---------------------")
-                console.log("PART 1...")
+                // --- Check for API Errors or Empty Response ---
+                 if (!data || Object.keys(data).length === 0) {
+                    throw new Error(`No data returned for symbol "${symbol}". It might be invalid.`);
+                 }
+                 // AlphaVantage often returns a "Note" for rate limits or "Error Message" for invalid symbols
+                 if (data["Note"]) {
+                     throw new Error(`API Note: ${data["Note"]}`);
+                 }
+                 if (data["Error Message"]) {
+                     throw new Error(`API Error: ${data["Error Message"]}`);
+                 }
+                 // Check for essential data fields
+                 if (!data.Name || !data.Description || !data.Websit) { // Website key might be missing sometimes
+                     // It's possible a valid symbol returns incomplete data, handle gracefully
+                     console.warn(`Incomplete data received for symbol "${symbol}".`);
+                     // Proceed to display what's available, but maybe show a warning
+                 }
 
 
+                console.log("---------------------");
+                console.log("PART 1: Logging Company Info (Console)");
+
+                // A-iv: Display info in console
+                console.log(`   Name: ${data.Name || 'N/A'}`);
+                console.log(`   Description: ${data.Description || 'N/A'}`);
+                console.log(`   Website: ${data.Website || 'N/A'}`);
 
 
+                console.log("---------------------");
+                console.log("PART 2: Updating Page Display");
 
+                // Part 2-A: Update page elements
+                displayNameSpan.textContent = data.Name || 'N/A';
+                displayDescriptionSpan.textContent = data.Description || 'N/A';
 
-                console.log("---------------------")
-                console.log("PART 2...")
-
-
-
-
+                // Update the link text and href attribute
+                const websiteUrl = data.Website;
+                if (websiteUrl && websiteUrl !== "None" && websiteUrl !== "") {
+                    displayLink.textContent = websiteUrl;
+                    displayLink.href = websiteUrl.startsWith('http') ? websiteUrl : `http://${websiteUrl}`; // Ensure protocol
+                } else {
+                    displayLink.textContent = 'N/A';
+                    displayLink.href = '#'; // Make non-clickable if no URL
+                }
 
             }).catch(function(error) {
-                console.error("ERROR:", error)
-            })
+                // Handle errors during fetch or processing
+                console.error("Lookup Error:", error);
+                // Display error message on the page
+                displayNameSpan.textContent = "Error";
+                displayDescriptionSpan.textContent = error.message; // Show specific error
+                displayLink.textContent = "Error";
+                displayLink.href = "#";
+            });
         }
 
-        // FUNCTION INVOCATIONS
-        // invoke function when the page loads:
-        //lookupCompany()
-        // invoke function when button is clicked:
-        //lookupButton.addEventListener("click", lookupCompany, false)
+        // --- FUNCTION INVOCATIONS ---
+        // B: Invoke function when the page loads:
+        // Check if there's a default symbol before initial load
+        if (inputSymbol.value) {
+             lookupCompany();
+        } else {
+             displayNameSpan.textContent = "Enter a symbol and click Lookup.";
+             displayDescriptionSpan.textContent = "";
+             displayLink.textContent = "";
+        }
+
+
+        // C: Invoke function when button is clicked:
+        lookupButton.addEventListener("click", lookupCompany);
+
+        // Optional: Allow lookup on pressing Enter in the input field
+        inputSymbol.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent default form submission if inside a form
+                lookupCompany();
+            }
+        });
 
     </script>
 </body>

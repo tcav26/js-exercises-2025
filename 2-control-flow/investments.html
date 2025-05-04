@@ -1,81 +1,311 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Investment Simulations</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Styling for Part 3 Interface */
+        .simulation-form div { margin-bottom: 10px; }
+        .simulation-form label { display: inline-block; width: 150px; margin-right: 10px; }
+        .simulation-form input[type="number"], .simulation-form button {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+        }
+         .simulation-form input[type="number"] { width: calc(100% - 170px); /* Adjust width considering label and margin */ }
+        .simulation-form button {
+            cursor: pointer;
+            background-color: #28a745; /* Green */
+            color: white;
+            border-color: #28a745;
+            margin-left: 160px; /* Align with inputs */
+            padding: 10px 15px;
+        }
+        .simulation-form button:hover { background-color: #218838; }
+        #simulation-results {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+         #simulation-results p { margin: 5px 0; }
+         #simulation-results strong { color: #0056b3; }
+
+         /* Responsive adjustments */
+         @media (max-width: 600px) {
+            .simulation-form label { width: 100%; margin-bottom: 3px; }
+            .simulation-form input[type="number"] { width: 100%; }
+            .simulation-form button { width: 100%; margin-left: 0; }
+         }
+    </style>
 </head>
 <body>
     <h1>Investment Simulation</h1>
     <a href="../index.html">Home</a>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Constant Return</h2>
     <p>
-        You have saved $150,000 in the bank.
-        You decide to invest this money in the stock market.
-        The average rate of return to expect from the stock market is around 8% per year.
+        You have saved $150,000 in the bank. You decide to invest this money in the stock market. The average rate of return to expect from the stock market is around 8% per year.
     </p>
     <p>
-        Under these conditions (assuming a constant return each year), how many years will it take your money to grow to $1M?
-        Answer in terms of full years (i.e. round up to the nearest full year, as necessary).
-        Log the original balance, the number of years, and the actual ending balance to the console.
-        Use the provided <code>formatUSD</code> function to format the currency values.
-
-        <strong>HINT:</strong> use a while loop and some basic math (shouldn't need any fancy financial formulae).
+        Under these conditions (assuming a constant return each year), how many years will it take your money to grow to $1M? Answer in terms of full years (i.e. round up to the nearest full year, as necessary). Log the original balance, the number of years, and the actual ending balance to the console. Use the provided <code>formatUSD</code> function to format the currency values.
+        <strong>HINT:</strong> use a while loop and some basic math.
     </p>
-
 
     <hr>
-    <h2>Part 2</h2>
+    <h2>Part 2: Simulated Random Return</h2>
     <p>
-        See the prompt from Part 1, where we are determining how long it will take an investment to reach $1M.
-        Repeat the analysis, except instead of assuming a constant 8% return per year, this time use a simulated random return instead.
-        To simulate the return, use a normal distribution with mean of 8% and standard deviation of 15%.
-
-        <strong>HINT:</strong> see the <a href="https://d3js.org/d3-random#randomNormal"><code>d3.randomNormal()</code> function</a> provided by the <code>d3-random</code> library.
+        Repeat the analysis from Part 1, but instead of assuming a constant 8% return per year, use a simulated random return. To simulate the return, use a normal distribution with mean of 8% (0.08) and standard deviation of 15% (0.15).
+        <strong>HINT:</strong> see the <a href="https://d3js.org/d3-random#randomNormal"><code>d3.randomNormal()</code> function</a>.
     </p>
-    <p>In addition to logging the original balance, the number of years, and the actual ending balance to the console, the program should also log the specific random return rates used each year.
-</p>
+    <p>In addition to logging the original balance, the number of years, and the actual ending balance to the console, the program should also log the specific random return rates used each year.</p>
 
     <hr>
-    <h2>Part 3</h2>
-    <p>Create your own HTML interface that will allow the user to run their own simulation as described in Part 2.
-        The interface should allow the user to input values for the initial balance, desired ending balance, mean, and standard deviation.
-        The interface should include a button, that when clicked should perform the simulation and
-        and display the resulting number of years and actual ending balance on the page.
-    </p>
+    <h2>Part 3: Interactive Simulation Interface</h2>
+    <p>Create your own HTML interface that will allow the user to run their own simulation as described in Part 2. The interface should allow the user to input values for the initial balance, desired ending balance, mean return (as decimal), and standard deviation (as decimal). The interface should include a button, that when clicked should perform the simulation and display the resulting number of years and actual ending balance on the page.</p>
 
+    <div class="simulation-form">
+        <h3>Run Your Own Simulation</h3>
+        <div>
+            <label for="initial-balance">Initial Balance ($):</label>
+            <input type="number" id="initial-balance" value="150000">
+        </div>
+        <div>
+            <label for="target-balance">Target Balance ($):</label>
+            <input type="number" id="target-balance" value="1000000">
+        </div>
+        <div>
+            <label for="mean-return">Mean Return (e.g., 0.08):</label>
+            <input type="number" id="mean-return" step="0.01" value="0.08">
+        </div>
+        <div>
+            <label for="std-dev">Std. Deviation (e.g., 0.15):</label>
+            <input type="number" id="std-dev" step="0.01" value="0.15">
+        </div>
+        <div>
+            <button id="run-simulation">Run Simulation</button>
+        </div>
+    </div>
+
+    <div id="simulation-results" style="display: none;"> <h4>Simulation Results:</h4>
+        <p id="result-years"></p>
+        <p id="result-final-balance"></p>
+        <p id="result-error" style="color: red;"></p>
+    </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/d3-random@3"></script>
     <script type="text/javascript">
 
+        /**
+         * Formats a numeric price into a USD string (e.g., $12.34).
+         * @param {number} price - The numeric price to format.
+         * @returns {string} The price formatted as USD currency.
+         */
         function formatUSD(price) {
-            return `$${price.toFixed(2)}`
+            // Ensure input is treated as a number
+            const numericPrice = Number(price);
+            if (isNaN(numericPrice)) {
+                return "$NaN"; // Indicate error
+            }
+            // Format to two decimal places with a dollar sign
+            return `$${numericPrice.toFixed(2)}`;
         }
 
-        console.log("---------------------")
-        console.log("PART 1...")
+        /**
+         * Formats a decimal rate into a percentage string (e.g., 8.00%).
+         * @param {number} rate - The rate in decimal format.
+         * @returns {string} The rate formatted as a percentage string.
+         */
+        function formatPct(rate) {
+            const numericRate = Number(rate);
+             if (isNaN(numericRate)) {
+                return "NaN%";
+            }
+            return `${(numericRate * 100).toFixed(2)}%`;
+        }
 
 
+        console.log("---------------------");
+        console.log("PART 1: Constant Return Simulation");
+
+        // --- Part 1 Logic ---
+        const initialBalancePart1 = 150000;
+        const targetBalancePart1 = 1000000;
+        const annualReturnRatePart1 = 0.08; // 8%
+
+        let currentBalancePart1 = initialBalancePart1;
+        let yearsPart1 = 0;
+
+        // Loop until the target balance is reached or exceeded
+        while (currentBalancePart1 < targetBalancePart1) {
+            // Calculate the gain for the year
+            const gain = currentBalancePart1 * annualReturnRatePart1;
+            // Add the gain to the current balance
+            currentBalancePart1 += gain;
+            // Increment the year counter
+            yearsPart1++;
+
+             // Safety break: prevent infinite loops if something goes wrong (e.g., negative return)
+             if (yearsPart1 > 1000) {
+                 console.error("Part 1: Simulation exceeded 1000 years, breaking loop.");
+                 break;
+             }
+        }
+
+        // Log the results for Part 1
+        console.log(`Initial Balance: ${formatUSD(initialBalancePart1)}`);
+        console.log(`Target Balance: ${formatUSD(targetBalancePart1)}`);
+        console.log(`Constant Annual Return Rate: ${formatPct(annualReturnRatePart1)}`);
+        console.log(`Years to reach target: ${yearsPart1}`);
+        console.log(`Actual Ending Balance: ${formatUSD(currentBalancePart1)}`);
 
 
+        console.log("---------------------");
+        console.log("PART 2: Simulated Random Return Simulation");
+
+        // --- Part 2 Logic ---
+        const initialBalancePart2 = 150000;
+        const targetBalancePart2 = 1000000;
+        const meanReturnPart2 = 0.08;    // 8% mean
+        const stdDevPart2 = 0.15;     // 15% standard deviation
+
+        // Create a random number generator function using d3.randomNormal
+        // This function, when called, will produce a random number from the specified normal distribution.
+        const randomReturnGenerator = d3.randomNormal(meanReturnPart2, stdDevPart2);
+
+        let currentBalancePart2 = initialBalancePart2;
+        let yearsPart2 = 0;
+        const yearlyReturns = []; // Array to store the random returns each year
+
+        // Loop until the target balance is reached or exceeded
+        while (currentBalancePart2 < targetBalancePart2) {
+            // Generate a random return rate for this year
+            const randomRate = randomReturnGenerator();
+            yearlyReturns.push(randomRate); // Store the rate
+
+            // Calculate the gain for the year using the random rate
+            const gain = currentBalancePart2 * randomRate;
+            // Add the gain to the current balance
+            currentBalancePart2 += gain;
+            // Increment the year counter
+            yearsPart2++;
+
+            // Safety break and check for stagnation/loss
+            if (yearsPart2 > 1000) {
+                 console.error("Part 2: Simulation exceeded 1000 years, breaking loop.");
+                 break;
+            }
+             // If balance stops growing or decreases significantly, break to avoid issues
+            if (currentBalancePart2 <= initialBalancePart2 && yearsPart2 > 50) {
+                 console.warn("Part 2: Balance not growing significantly, stopping simulation.");
+                 break;
+            }
+        }
+
+        // Log the results for Part 2
+        console.log(`Initial Balance: ${formatUSD(initialBalancePart2)}`);
+        console.log(`Target Balance: ${formatUSD(targetBalancePart2)}`);
+        console.log(`Simulated Return Mean: ${formatPct(meanReturnPart2)}, Std Dev: ${formatPct(stdDevPart2)}`);
+        console.log(`Years to reach target (simulation): ${yearsPart2}`);
+        console.log(`Actual Ending Balance (simulation): ${formatUSD(currentBalancePart2)}`);
+        console.log("Simulated Yearly Returns:");
+        // Log the first few and last few returns for brevity if many years
+        if (yearlyReturns.length > 10) {
+            console.log(yearlyReturns.slice(0, 5).map(formatPct).join(', ') + ' ... ' + yearlyReturns.slice(-5).map(formatPct).join(', '));
+        } else {
+            console.log(yearlyReturns.map(formatPct).join(', '));
+        }
 
 
-        console.log("---------------------")
-        console.log("PART 2...")
+        console.log("---------------------");
+        console.log("PART 3: Interactive Simulation Setup");
 
+        // --- Part 3 Logic ---
+        // Get references to the HTML elements
+        const initialBalanceInput = document.getElementById('initial-balance');
+        const targetBalanceInput = document.getElementById('target-balance');
+        const meanReturnInput = document.getElementById('mean-return');
+        const stdDevInput = document.getElementById('std-dev');
+        const runButton = document.getElementById('run-simulation');
+        const resultsDiv = document.getElementById('simulation-results');
+        const resultYearsP = document.getElementById('result-years');
+        const resultBalanceP = document.getElementById('result-final-balance');
+        const resultErrorP = document.getElementById('result-error');
 
+        /**
+         * Runs the investment simulation based on user inputs and displays results.
+         */
+        function runInteractiveSimulation() {
+            // Clear previous results and errors
+            resultYearsP.textContent = '';
+            resultBalanceP.textContent = '';
+            resultErrorP.textContent = '';
+            resultsDiv.style.display = 'none'; // Hide results initially
 
+            // Get input values and convert them to numbers
+            const initialBalance = parseFloat(initialBalanceInput.value);
+            const targetBalance = parseFloat(targetBalanceInput.value);
+            const meanReturn = parseFloat(meanReturnInput.value);
+            const stdDev = parseFloat(stdDevInput.value);
 
+            // --- Input Validation ---
+            let errorMessage = '';
+            if (isNaN(initialBalance) || initialBalance <= 0) errorMessage += 'Initial Balance must be a positive number. ';
+            if (isNaN(targetBalance) || targetBalance <= initialBalance) errorMessage += 'Target Balance must be greater than Initial Balance. ';
+            if (isNaN(meanReturn)) errorMessage += 'Mean Return must be a number. ';
+            if (isNaN(stdDev) || stdDev < 0) errorMessage += 'Standard Deviation must be a non-negative number. ';
 
+            if (errorMessage) {
+                resultErrorP.textContent = `Error: ${errorMessage}`;
+                resultsDiv.style.display = 'block'; // Show the error message
+                return; // Stop execution if validation fails
+            }
 
-        console.log("---------------------")
-        console.log("PART 3...")
+            // --- Simulation Logic (similar to Part 2) ---
+            const interactiveRandomGenerator = d3.randomNormal(meanReturn, stdDev);
+            let currentBalance = initialBalance;
+            let years = 0;
+            const maxYears = 1000; // Safety limit
 
+            while (currentBalance < targetBalance && years <= maxYears) {
+                const randomRate = interactiveRandomGenerator();
+                currentBalance += currentBalance * randomRate;
+                years++;
 
+                // Additional check to prevent issues with extremely high std dev / negative balances
+                 if (currentBalance <= 0 && years > 0) {
+                     resultErrorP.textContent = `Error: Balance became non-positive after ${years} years. Check inputs (especially high standard deviation).`;
+                     resultsDiv.style.display = 'block';
+                     return;
+                 }
+            }
 
+            // --- Display Results ---
+            resultsDiv.style.display = 'block'; // Show the results container
+            if (years > maxYears) {
+                 resultYearsP.textContent = `Simulation stopped after ${maxYears} years.`;
+                 resultBalanceP.textContent = `Ending Balance: ${formatUSD(currentBalance)} (Target not reached)`;
+            } else {
+                 resultYearsP.textContent = `Years to reach target: ${years}`;
+                 resultBalanceP.textContent = `Actual Ending Balance: ${formatUSD(currentBalance)}`;
+            }
+        }
+
+        // Add event listener to the button
+        runButton.addEventListener('click', runInteractiveSimulation);
+
+        console.log("Part 3: Interactive simulation interface is ready.");
 
     </script>
 </body>

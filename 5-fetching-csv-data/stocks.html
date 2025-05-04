@@ -2,7 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stocks (CSV)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Display area styling */
+        .stock-display {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        .stock-display p { margin: 5px 0 10px 0; }
+        .stock-display span { font-weight: bold; color: #333; }
+        #display-symbol { color: #0056b3; } /* Blue for symbol */
+        #display-pct-change.positive { color: #28a745; } /* Green for positive change */
+        #display-pct-change.negative { color: #dc3545; } /* Red for negative change */
+    </style>
 </head>
 <body>
 
@@ -10,105 +33,177 @@
     <a href="../index.html">Home</a>
 
     <h2>Dataset Information</h2>
-    <p>For this exercise, we will use a handful of CSV files that have been uploaded to the Internet.
-        The CSV files contains historical stock data for a number of companies.
-        There is a CSV file for each of the following symbols: AAPL, GOOGL, MSFT, NFLX, NVDA, and SPOT.
-        The name of each CSV file follows a consistent format (e.g.
-        <a href="https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/daily_adjusted_NFLX.csv">"daily_adjusted_NFLX.csv"</a>
+    <p>For this exercise, we will use a handful of CSV files that have been uploaded to the Internet containing historical stock data. There is a CSV file for each of the following symbols: AAPL, GOOGL, MSFT, NFLX, NVDA, and SPOT. The name of each CSV file follows a consistent format (e.g.
+        <a href="https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/daily_adjusted_NFLX.csv" target="_blank" rel="noopener noreferrer">"daily_adjusted_NFLX.csv"</a>
         for NFLX).
-        This data was originally obtained from the AlphaVantage API.
     </p>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing (Console)</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-        <strong>NOTE:</strong> Format all prices as currency using a dollar sign and rounding to two decimal places.
-        <strong>NOTE:</strong> Format all percentages with a percent sign and rounded to two decimals.
-
-
+        Write JavaScript code to answer the questions below. Log each of the answers to the console.
+        <strong>NOTE:</strong> Format all prices as currency ($X.XX) and percentages as X.XX%.
         <ol type="A">
-            <li>Choose one of the stock symbols listed above (i.e. "NFLX"), and store it in a variable called <code>symbol</code>.</li>
-            <li>Dynamically compile the corresponding dataset URL using the <code>symbol</code> variable from Question A,
-                and store it in a variable called <code>requestUrl</code>.</li>
-            <li>Fetch stock data for the chosen symbol, using the <code>requestUrl</code> from Question B.</li>
-            <li>Display the number of days in the provided data (i.e. 100).
-                <strong>NOTE:</strong> It is sufficient to just count the number of row objects.
-            </li>
-            <li>Display the date and adjusted closing price on the earliest day (i.e. "2024-02-05" and "$562.06").
-            </li>
-            <li>
-                Display the date and adjusted closing price on the latest day (i.e. "2024-06-27" and "$684.34").
-            </li>
-            <li>
-                Calculate the overall percent change in adjusted closing price from the earliest to the latest day (i.e. "21.76%").
-            </li>
+            <li>Choose one stock symbol (e.g., "NFLX"), store in <code>symbol</code>.</li>
+            <li>Dynamically compile the dataset URL using <code>symbol</code>, store in <code>requestUrl</code>.</li>
+            <li>Fetch stock data for the chosen symbol using <code>requestUrl</code>.</li>
+            <li>Display the number of days in the data (i.e., 100).</li>
+            <li>Display the date and adjusted closing price on the earliest day.</li>
+            <li>Display the date and adjusted closing price on the latest day.</li>
+            <li>Calculate and display the overall percent change in adjusted closing price from earliest to latest day.</li>
         </ol>
     </p>
 
-
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Stock Info</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
-        <strong>NOTE:</strong> when applicable, use the same currency and percent formatting as in Part 1.
-
+        Write JavaScript code to answer the questions below. Display the answers on the page in the designated areas. Use the same currency and percent formatting as in Part 1.
         <ol type="A">
-            <li>Using the designated <code>span</code> elements below,
-                display the stock symbol,
-                the earliest day's date and adjusted closing price,
-                the latest day's date and adjusted closing price,
-                and the overall percent change.
-            </li>
-
+            <li>Using the designated <code>span</code> elements, display the stock symbol, earliest day's date and price, latest day's date and price, and the overall percent change.</li>
         </ol>
     </p>
 
     <hr>
     <h2>Display</h2>
-    <p>Symbol: <span id="display-symbol">TODO</span></p>
-    <p>Earliest: <span id="display-earliest">TODO</span></p>
-    <p>Latest: <span id="display-latest">TODO</span></p>
-    <p>Percent Change: <span id="display-pct-change">TODO</span></p>
-
+    <div class="stock-display">
+        <p>Symbol: <span id="display-symbol">Loading...</span></p>
+        <p>Earliest: <span id="display-earliest">Loading...</span></p>
+        <p>Latest: <span id="display-latest">Loading...</span></p>
+        <p>Percent Change: <span id="display-pct-change">Loading...</span></p>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script type="text/javascript">
 
+        /**
+         * Formats a numeric price into a USD string (e.g., $12.34).
+         * Handles potential non-numeric input.
+         * @param {number|string} price - The numeric price or string to format.
+         * @returns {string} The price formatted as USD currency or "$NaN" on error.
+         */
         function formatUSD(price) {
-            return `$${price.toFixed(2)}`
+            const numericPrice = parseFloat(price); // Convert string price from CSV to number
+            if (isNaN(numericPrice)) {
+                return "$NaN";
+            }
+            return `$${numericPrice.toFixed(2)}`;
         }
 
+        /**
+         * Formats a decimal percentage into a string (e.g., 8.75%).
+         * Handles potential non-numeric input.
+         * @param {number|string} percentage - The percentage in decimal format (e.g., 0.0875).
+         * @returns {string} The percentage formatted as a string with '%' sign or "NaN%" on error.
+         */
         function formatPct(percentage) {
-            return `${(percentage * 100).toFixed(2)}%`
+            const numericPercentage = parseFloat(percentage); // Convert string percentage to number
+            if (isNaN(numericPercentage)) {
+                return "NaN%";
+            }
+            return `${(numericPercentage * 100).toFixed(2)}%`;
         }
 
+        // --- Part 1: Setup ---
+        // A: Choose stock symbol
+        const symbol = "NFLX"; // Change this to test others: AAPL, GOOGL, MSFT, NVDA, SPOT
 
-        var symbol = "NFLX" // one of: [AAPL, GOOGL, MSFT, NFLX, NVDA, SPOT]
-        var filename = `daily_adjusted_${symbol}.csv`
-        var requestUrl = `https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/${filename}`
+        // B: Compile dataset URL
+        const filename = `daily_adjusted_${symbol}.csv`;
+        const requestUrl = `https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/${filename}`;
+        console.log(`Compiled URL: ${requestUrl}`);
 
+        // Get references to display elements
+        const symbolSpan = document.getElementById('display-symbol');
+        const earliestSpan = document.getElementById('display-earliest');
+        const latestSpan = document.getElementById('display-latest');
+        const pctChangeSpan = document.getElementById('display-pct-change');
+
+        // C: Fetch data using d3.csv
         d3.csv(requestUrl).then(function(data) {
-            console.log("DATA:", data)
+            console.log(`DATA for ${symbol}:`, data);
 
-            console.log("---------------------")
-            console.log("PART 1...")
+            // --- Data Type Conversion & Sorting ---
+            // Convert relevant columns (adjusted_close) to numbers and sort by timestamp ascending
+             if (!data || data.length === 0) {
+                 throw new Error(`No data returned for symbol ${symbol}. Check URL or symbol.`);
+             }
+
+            data.forEach(d => {
+                d.adjusted_close = parseFloat(d.adjusted_close); // Convert price string to float
+                 // Optional: Convert timestamp to Date objects if more complex date logic is needed
+                 // d.timestamp = new Date(d.timestamp);
+            });
+
+            // Sort by timestamp ascending (assuming format is comparable as strings like YYYY-MM-DD)
+            data.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+            // If timestamp were Date objects: data.sort((a, b) => a.timestamp - b.timestamp);
+
+            const stockData = data; // Use the processed data
+
+            // --- PART 1: Console Logging ---
+            console.log("---------------------");
+            console.log(`PART 1: Processing Stock Data for ${symbol} (Console)`);
+
+            // D: Display the number of days
+            const numberOfDays = stockData.length;
+            console.log(`D. Number of days: ${numberOfDays}`);
+
+            // Ensure we have data before proceeding
+            if (numberOfDays === 0) {
+                 console.error("No data points found after processing.");
+                 throw new Error("No valid data points to analyze.");
+            }
+
+            // E: Display earliest day's date and adjusted closing price
+            const earliestDay = stockData[0]; // First element after sorting
+            console.log(`E. Earliest Day: ${earliestDay.timestamp} - Price: ${formatUSD(earliestDay.adjusted_close)}`);
+
+            // F: Display latest day's date and adjusted closing price
+            const latestDay = stockData[numberOfDays - 1]; // Last element after sorting
+            console.log(`F. Latest Day: ${latestDay.timestamp} - Price: ${formatUSD(latestDay.adjusted_close)}`);
+
+            // G: Calculate and display overall percent change
+            let percentChange = NaN; // Default to NaN
+            // Check if prices are valid numbers before calculating
+            if (!isNaN(earliestDay.adjusted_close) && !isNaN(latestDay.adjusted_close) && earliestDay.adjusted_close !== 0) {
+                percentChange = (latestDay.adjusted_close - earliestDay.adjusted_close) / earliestDay.adjusted_close;
+                console.log(`G. Overall Percent Change: ${formatPct(percentChange)}`);
+            } else {
+                 console.log("G. Overall Percent Change: N/A (invalid price data)");
+            }
 
 
+            // --- PART 2: Displaying Stock Info on Page ---
+            console.log("---------------------");
+            console.log(`PART 2: Populating Stock Display for ${symbol}`);
 
+            // A: Display information in spans
+            symbolSpan.textContent = symbol;
+            earliestSpan.textContent = `${earliestDay.timestamp} (${formatUSD(earliestDay.adjusted_close)})`;
+            latestSpan.textContent = `${latestDay.timestamp} (${formatUSD(latestDay.adjusted_close)})`;
 
+            // Display percent change and add class for color styling
+            pctChangeSpan.textContent = formatPct(percentChange);
+            pctChangeSpan.classList.remove('positive', 'negative'); // Clear previous classes
+            if (!isNaN(percentChange)) {
+                if (percentChange > 0) {
+                    pctChangeSpan.classList.add('positive');
+                } else if (percentChange < 0) {
+                    pctChangeSpan.classList.add('negative');
+                }
+            } else {
+                 pctChangeSpan.textContent = "N/A"; // Show N/A if calculation failed
+            }
 
-            console.log("---------------------")
-            console.log("PART 2...")
+            console.log("Part 2A: Stock display populated.");
 
-
-
-
-
-
-            }).catch(function(error) {
-                console.error("ERROR:", error)
-        })
+        }).catch(function(error) {
+            // Handle errors during fetch, parse, or processing
+            console.error(`Error fetching or processing stock data for ${symbol}:`, error);
+            // Display error message to the user
+            const displayDiv = document.querySelector('.stock-display');
+            if (displayDiv) {
+                 displayDiv.innerHTML = `<p style="color: red;">Could not load stock data for ${symbol}: ${error.message}</p>`;
+            }
+        });
 
     </script>
 </body>

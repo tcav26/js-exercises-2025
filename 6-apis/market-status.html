@@ -2,7 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Market Status (JSON)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Display area styling */
+        #display-market-info {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+        }
+        #display-market-info p { margin: 5px 0 10px 0; }
+        #display-market-info span { font-weight: bold; color: #333; }
+        #display-status.open { color: #28a745; } /* Green for open */
+        #display-status.closed { color: #dc3545; } /* Red for closed */
+        .error-message { color: red; font-style: italic; }
+    </style>
 </head>
 <body>
 
@@ -10,103 +33,169 @@
     <a href="../index.html">Home</a>
 
     <h2>Dataset Information</h2>
-    <p>For this exercise, we will use data from the AlphaVantage API.
-        Specifically we will use the <a href="https://www.alphavantage.co/documentation/#market-status">"Market Status" endpoint</a>
-        to fetch information about the current status of major trading venues around the world.
-        Consult the API documentation to learn more.
-    </p>
+    <p>For this exercise, we will use data from the AlphaVantage API. Specifically we will use the <a href="https://www.alphavantage.co/documentation/#market-status" target="_blank" rel="noopener noreferrer">"Market Status" endpoint</a> to fetch information about the current status of major trading venues around the world. Consult the API documentation to learn more.</p>
 
     <h2>Setup</h2>
     <p>First obtain an AlphaVantage API Key, and supply it when prompted.</p>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing (Console)</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to answer the questions below. Log each of the answers to the console.
         <ol type="A">
             <li>Fetch market status data from the API.</li>
             <li>Display the number of markets.</li>
-            <li>Filter the markets to identify only those that have a market type of "Equity", and store them in a variable called <code>equityMarkets</code>.</li>
+            <li>Filter markets for "Equity" type, store in <code>equityMarkets</code>.</li>
             <li>Display the number of equity markets.</li>
-            <li>Loop through the equity markets and display the market type and region of each.</li>
-            <li>Use a find operation to identify the equity market that has a region of "United States", and store it in a variable called <code>market</code>.</li>
-            <li>Display information about the US market, including: the market type, the primary exchanges, the local open and close time, and the current market status. Format the market status using all capital letters.</li>
+            <li>Loop through equity markets and display market type and region.</li>
+            <li>Use a find operation to identify the "United States" equity market, store in <code>market</code>.</li>
+            <li>Display US market details: type, exchanges, open/close times, current status (UPPERCASE).</li>
         </ol>
     </p>
 
-
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Market Info</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
+        Write JavaScript code to answer the questions below. Display the answers on the page in the designated areas.
     </p>
-
     <ol type="A">
-        <li>Using the designated <code>span</code> elements below,
-            display information about the US market, including it's region, market type,
-            primary exchanges, local open and close times, and current status.
-        </li>
+        <li>Using the designated <code>span</code> elements, display US market details: region, type, exchanges, open/close times, and current status.</li>
     </ol>
 
     <hr>
-    <h2>Display</h2>
-
-    <!--select name="region" id="select-region">
-        <option value="N/A">Select an Equity Market Region</option>
-    </select-->
+    <h2>Display (US Equity Market)</h2>
 
     <div id="display-market-info">
-        <p>Region: <span id="display-region">TODO</span></p>
-        <p>Market Type: <span id="display-type">TODO</span></p>
-        <p>Primary Exchanges: <span id="display-exchanges">TODO</span></p>
-        <p>Local Open: <span id="display-open">TODO</span></p>
-        <p>Local Close: <span id="display-close">TODO</span></p>
-        <p>Current Status: <span id="display-status">TODO</span></p>
+        <p>Region: <span id="display-region">Loading...</span></p>
+        <p>Market Type: <span id="display-type">Loading...</span></p>
+        <p>Primary Exchanges: <span id="display-exchanges">Loading...</span></p>
+        <p>Local Open: <span id="display-open">Loading...</span></p>
+        <p>Local Close: <span id="display-close">Loading...</span></p>
+        <p>Current Status: <span id="display-status">Loading...</span></p>
     </div>
-
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script type="text/javascript">
 
-        // AVOID HARD-CODING THE CREDENTIALS
-        // USE SESSION STORAGE TO MINIMIZE THE NUMBER OF TIMES WE HAVE TO PROVIDE THE CREDENTIAL
-        // check session storage for the API Key:
-        var apiKey = sessionStorage.getItem("ALPHAVANTAGE_API_KEY")
+        // --- API Key Handling ---
+        var apiKey = sessionStorage.getItem("ALPHAVANTAGE_API_KEY");
         if (!apiKey) {
-            // if it isn't there, ask the user to supply it:
-            apiKey = prompt("Please enter your AlphaVantage API key:")
-            // store it in the session for later (so it will persist after refreshing the page)
-            sessionStorage.setItem("ALPHAVANTAGE_API_KEY", apiKey)
+            apiKey = prompt("Please enter your AlphaVantage API key:");
+             if (apiKey) {
+                sessionStorage.setItem("ALPHAVANTAGE_API_KEY", apiKey);
+            } else {
+                 console.error("API Key not provided. Functionality may be limited.");
+                 document.getElementById('display-market-info').innerHTML = '<p class="error-message">AlphaVantage API Key not provided. Please refresh and enter your key.</p>';
+            }
         }
 
+        // Get references to display elements
+        const regionSpan = document.getElementById('display-region');
+        const typeSpan = document.getElementById('display-type');
+        const exchangesSpan = document.getElementById('display-exchanges');
+        const openSpan = document.getElementById('display-open');
+        const closeSpan = document.getElementById('display-close');
+        const statusSpan = document.getElementById('display-status');
+        const displayContainerMarket = document.getElementById('display-market-info');
 
 
+        // Proceed only if API key is available
+        if (apiKey) {
+            const requestUrl = `https://www.alphavantage.co/query?function=MARKET_STATUS&apikey=${apiKey}`;
+            console.log("Request URL:", requestUrl);
 
-        var requestUrl = `https://www.alphavantage.co/query?function=MARKET_STATUS&apikey=${apiKey}`
-        d3.json(requestUrl).then(function(data) {
-            console.log("RESPONSE:", data)
+            // A: Fetch market status data using d3.json
+            d3.json(requestUrl).then(function(data) {
+                console.log("API Response:", data);
 
-            console.log("---------------------")
-            console.log("PART 1...")
+                 // --- Check for API Errors or Empty Response ---
+                 if (!data || !data.markets || !Array.isArray(data.markets)) {
+                     // Check if it's just an error message from the API
+                     if (data && data["Error Message"]) {
+                         throw new Error(`API Error: ${data["Error Message"]}`);
+                     }
+                     if (data && data["Note"]) {
+                          throw new Error(`API Note: ${data["Note"]}`);
+                     }
+                     // Otherwise, unexpected structure
+                     throw new Error("Invalid or unexpected data structure received from Market Status API.");
+                 }
+
+                const allMarkets = data.markets;
+
+                // --- PART 1: Console Logging ---
+                console.log("---------------------");
+                console.log("PART 1: Processing Market Status Data (Console)");
+
+                // B: Display the number of markets
+                const numberOfMarkets = allMarkets.length;
+                console.log(`B. Number of markets: ${numberOfMarkets}`);
+
+                // C: Filter for "Equity" market type
+                const equityMarkets = allMarkets.filter(market => market.market_type === "Equity");
+                console.log("C. Filtering complete. Equity markets stored in 'equityMarkets'.");
+
+                // D: Display the number of equity markets
+                console.log(`D. Number of equity markets: ${equityMarkets.length}`);
+
+                // E: Loop through equity markets and display type and region
+                console.log("E. Equity Market Types and Regions:");
+                equityMarkets.forEach(market => {
+                    console.log(`   - Type: ${market.market_type}, Region: ${market.region}`);
+                });
+
+                // F: Use find to identify the "United States" equity market
+                const usMarket = equityMarkets.find(market => market.region === "United States");
+
+                // G: Display information about the US market
+                console.log("G. US Equity Market Details:");
+                if (usMarket) {
+                    console.log(`   - Market Type: ${usMarket.market_type}`);
+                    console.log(`   - Primary Exchanges: ${usMarket.primary_exchanges}`);
+                    console.log(`   - Local Open: ${usMarket.local_open}`);
+                    console.log(`   - Local Close: ${usMarket.local_close}`);
+                    console.log(`   - Current Status: ${usMarket.current_status.toUpperCase()}`); // Format status
+                } else {
+                    console.log("   - United States equity market not found in the data.");
+                }
 
 
+                // --- PART 2: Displaying Market Info on Page ---
+                console.log("---------------------");
+                console.log("PART 2: Populating Market Display (US Equity)");
 
+                // A: Display US market info in spans
+                if (usMarket) {
+                    regionSpan.textContent = usMarket.region;
+                    typeSpan.textContent = usMarket.market_type;
+                    exchangesSpan.textContent = usMarket.primary_exchanges;
+                    openSpan.textContent = usMarket.local_open;
+                    closeSpan.textContent = usMarket.local_close;
+                    statusSpan.textContent = usMarket.current_status; // Display raw status first
 
+                    // Add class for styling based on status
+                    statusSpan.classList.remove('open', 'closed'); // Clear previous classes
+                    if (usMarket.current_status.toLowerCase() === 'open') {
+                        statusSpan.classList.add('open');
+                    } else if (usMarket.current_status.toLowerCase() === 'closed') {
+                         statusSpan.classList.add('closed');
+                    }
+                     console.log("Part 2A: US Market display populated.");
 
-            console.log("---------------------")
-            console.log("PART 2...")
+                } else {
+                    // Handle case where US market wasn't found
+                    displayContainerMarket.innerHTML = '<p class="error-message">United States equity market data not found in the API response.</p>';
+                     console.log("Part 2A: US Market data not found, display updated with message.");
+                }
 
-
-
-
-        }).catch(function(error) {
-            console.error("ERROR:", error)
-        })
-
-
+            }).catch(function(error) {
+                // Handle errors during fetch or processing
+                console.error("Error fetching or processing market status data:", error);
+                // Display error message to the user
+                displayContainerMarket.innerHTML = `<p class="error-message">Could not load market status data: ${error.message}</p>`;
+            });
+        } else {
+             // This case is handled by the initial API key check, but good for clarity
+             console.log("Skipping API call because API key is missing.");
+        }
 
     </script>
 </body>

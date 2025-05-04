@@ -2,7 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groceries (CSV)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Display list styling */
+        #display-groceries {
+            list-style: none; /* Remove default bullets */
+            padding: 0;
+            margin-top: 10px;
+        }
+        #display-groceries li {
+            border-bottom: 1px solid #eee; /* Separator line */
+            padding: 8px 0;
+            font-size: 0.95em;
+        }
+        #display-groceries li:last-child {
+            border-bottom: none; /* No line after the last item */
+        }
+        #display-groceries .product-name {
+            font-weight: bold;
+            color: #333;
+        }
+        #display-groceries .product-price {
+            color: #28a745; /* Green for price */
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -11,49 +43,33 @@
 
     <h2>Dataset Information</h2>
     <p>For this exercise, we will use a CSV file called
-        <a href="https://raw.githubusercontent.com/prof-rossetti/intro-to-python/main/data/products.csv">"products.csv"</a>
-        that has been uploaded to the Internet.
-        The CSV file contains an inventory of grocery store products.
-        This data was adapted from an open source dataset provided by Instacart in 2017.
+        <a href="https://raw.githubusercontent.com/prof-rossetti/intro-to-python/main/data/products.csv" target="_blank" rel="noopener noreferrer">"products.csv"</a>
+        that has been uploaded to the Internet. The CSV file contains an inventory of grocery store products.
     </p>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing (Console)</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to answer the questions below. Log each of the answers to the console.
         <ol type="A">
             <li>Fetch the grocery product data using the provided URL.</li>
             <li>Display the number of products (i.e. 20).</li>
-            <li>Loop through the products and display the name and price of each. Format the prices as currency using a dollar sign and rounding to two decimal places.
-                <strong>HINT:</strong> you may need to convert the prices to floats before formatting.
-            </li>
+            <li>Loop through the products and display the name and price of each. Format prices as currency.</li>
             <hr>
-            <li>Arrive at a unique list of department names, and store them in a variable called <code>departments</code>.
-                <strong>HINT:</strong> loop through the products,
-                and conditionally add that product's department name to the <code>departments</code> array,
-                only if it is not already included in the array.
-            </li>
+            <li>Arrive at a unique list of department names, store them in <code>departments</code>.</li>
             <li>Display the number of unique departments (i.e. 10).</li>
-            <li>Loop through the array of unique departments and display the name of each, formatted as all upper-case.</li>
+            <li>Loop through unique departments and display the name of each (upper-case).</li>
             <hr>
-            <li>Use a filter operation to identify the products that have a department name of "beverages", and store them in a variable called <code>beverages</code>.</li>
+            <li>Filter products with department "beverages", store in <code>beverages</code>.</li>
             <li>Display the number of beverage products (i.e. 5).</li>
-            <li>Display the average price of all the beverage products, formatted as as currency using a dollar sign and rounding to two decimal places (i.e. "$3.04").</li>
+            <li>Display the average price of beverage products, formatted as currency.</li>
         </ol>
     </p>
 
-
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Groceries</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
-
+        Write JavaScript code to answer the questions below. Display the answers on the page in the designated areas.
         <ol type="A">
-            <li>Loop through all the products and display the name and price of each, in a separate list item.
-                Use the designated <code>ul</code> element below.
-                Format the prices as currency using a dollar sign and rounding to two decimal places.
-            </li>
+            <li>Loop through all products and display the name and price of each in a separate list item. Use the designated <code>ul</code> element. Format prices as currency.</li>
         </ol>
     </p>
 
@@ -62,46 +78,156 @@
 
     <p>Groceries:</p>
     <ul id="display-groceries">
-    </ul>
-
-
+        <li>Loading...</li> </ul>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script type="text/javascript">
 
+        /**
+         * Formats a numeric price into a USD string (e.g., $12.34).
+         * Handles potential non-numeric input.
+         * @param {number|string} price - The numeric price or string to format.
+         * @returns {string} The price formatted as USD currency or "$NaN" on error.
+         */
         function formatUSD(price) {
-            return `$${price.toFixed(2)}`
+            const numericPrice = parseFloat(price); // Convert string price from CSV to number
+            if (isNaN(numericPrice)) {
+                return "$NaN"; // Handle cases where conversion fails
+            }
+            return `$${numericPrice.toFixed(2)}`;
         }
 
-        var requestUrl = "https://raw.githubusercontent.com/prof-rossetti/intro-to-python/main/data/products.csv"
+        const requestUrl = "https://raw.githubusercontent.com/prof-rossetti/intro-to-python/main/data/products.csv";
 
+        // Get reference to the display list element
+        const groceriesList = document.getElementById('display-groceries');
+
+        // Fetch data using d3.csv
         d3.csv(requestUrl).then(function(data) {
-            console.log("DATA:", data)
-            var products = data
+            console.log("DATA fetched successfully:", data);
+            const products = data; // D3.csv automatically parses rows into objects
 
-            console.log("---------------------")
-            console.log("PART 1...")
-
-
-
-
-
-
-            console.log("---------------------")
-            console.log("PART 2...")
+            // --- Data Type Conversion (Important for CSV!) ---
+            // D3 loads CSV columns as strings. Convert price to number for calculations/formatting.
+            products.forEach(p => {
+                p.price = parseFloat(p.price); // Convert price string to float
+            });
 
 
+            // --- PART 1: Console Logging ---
+            console.log("---------------------");
+            console.log("PART 1: Processing Grocery Data (Console)");
+
+            // B: Display the number of products
+            const numberOfProducts = products.length;
+            console.log(`B. Number of products: ${numberOfProducts}`);
+
+            // C: Loop through products, display name and formatted price
+            console.log("C. Product Names and Prices:");
+            products.forEach(product => {
+                // Check if price is a valid number before formatting
+                 if (!isNaN(product.price)) {
+                     console.log(`   - ${product.product_name}: ${formatUSD(product.price)}`);
+                 } else {
+                     console.log(`   - ${product.product_name}: Price unavailable`);
+                 }
+            });
+
+            // D: Arrive at a unique list of department names
+            const departments = [];
+            products.forEach(product => {
+                if (product.department && !departments.includes(product.department)) {
+                    departments.push(product.department);
+                }
+            });
+            // Alternative using Set for uniqueness:
+            // const departments = [...new Set(products.map(p => p.department).filter(d => d))];
+            console.log("D. Unique departments collected.");
+            departments.sort(); // Optional: sort alphabetically
 
 
+            // E: Display the number of unique departments
+            console.log(`E. Number of unique departments: ${departments.length}`);
+
+            // F: Loop through unique departments and display in upper-case
+            console.log("F. Unique Departments (UPPERCASE):");
+            departments.forEach(dept => {
+                console.log(`   - ${dept.toUpperCase()}`);
+            });
+
+            // G: Filter for "beverages" department
+            const beverages = products.filter(product => product.department && product.department.toLowerCase() === "beverages");
+            console.log("G. Filtering complete. Beverage products stored in 'beverages'.");
+
+            // H: Display the number of beverage products
+            console.log(`H. Number of beverage products: ${beverages.length}`);
+
+            // I: Calculate and display the average price of beverages
+            if (beverages.length > 0) {
+                // Use d3.mean to calculate average price
+                // Ensure we only average valid prices
+                const validBeveragePrices = beverages.map(b => b.price).filter(price => !isNaN(price));
+                if (validBeveragePrices.length > 0) {
+                    const avgBeveragePrice = d3.mean(validBeveragePrices);
+                    console.log(`I. Average beverage price: ${formatUSD(avgBeveragePrice)}`);
+                } else {
+                     console.log("I. Average beverage price: N/A (no valid prices)");
+                }
+
+            } else {
+                console.log("I. Average beverage price: N/A (no beverage products)");
+            }
 
 
+            // --- PART 2: Displaying Groceries on Page ---
+            console.log("---------------------");
+            console.log("PART 2: Populating Grocery List Display");
+
+            // Clear the initial "Loading..." message
+            groceriesList.innerHTML = '';
+
+            // A: Loop through all products and display name/price in the list
+            if (numberOfProducts > 0) {
+                products.forEach(product => {
+                    const listItem = document.createElement('li');
+
+                    // Create spans for better styling/structure (optional)
+                    const nameSpan = document.createElement('span');
+                    nameSpan.classList.add('product-name');
+                    nameSpan.textContent = product.product_name;
+
+                    const priceSpan = document.createElement('span');
+                    priceSpan.classList.add('product-price');
+                     // Check if price is valid before formatting
+                     if (!isNaN(product.price)) {
+                         priceSpan.textContent = formatUSD(product.price);
+                     } else {
+                         priceSpan.textContent = "(Price N/A)";
+                         priceSpan.style.fontStyle = "italic";
+                         priceSpan.style.color = "#999";
+                     }
 
 
+                    listItem.appendChild(nameSpan);
+                    listItem.appendChild(priceSpan);
+                    groceriesList.appendChild(listItem);
+                });
+                console.log("Part 2A: Grocery list populated.");
+            } else {
+                // Handle case with no products
+                const listItem = document.createElement('li');
+                listItem.textContent = "No groceries to display.";
+                listItem.style.fontStyle = "italic";
+                groceriesList.appendChild(listItem);
+                console.log("Part 2A: No groceries to display.");
+            }
 
-
-            }).catch(function(error) {
-                console.error("ERROR:", error)
-        })
+        }).catch(function(error) {
+            // Handle errors during the fetch/parse process
+            console.error("Error fetching or processing CSV data:", error);
+            // Display error message to the user
+            groceriesList.innerHTML = `<li style="color: red;">Could not load grocery data: ${error.message}</li>`;
+        });
 
     </script>
 </body>

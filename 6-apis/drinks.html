@@ -4,6 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Non-alcoholic Drinks (JSON)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 900px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Display area styling */
+        #display-drinks-count { font-weight: bold; }
+        #display-drinks {
+            display: grid; /* Use grid for layout */
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid */
+            gap: 15px; /* Space between items */
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .drink-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            background-color: #f9f9f9;
+            overflow: hidden; /* Ensure content stays within borders */
+        }
+        .drink-item p {
+            margin: 5px 0 10px 0;
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #333;
+            /* Ellipsis for long names */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .drink-item img {
+            width: 100px; /* Fixed width */
+            height: 100px; /* Fixed height */
+            object-fit: cover; /* Cover area without distortion */
+            border-radius: 4px;
+            border: 1px solid #eee;
+            display: block; /* Center image */
+            margin: 0 auto; /* Center image */
+        }
+        .error-message { color: red; font-style: italic; }
+    </style>
 </head>
 <body>
 
@@ -11,79 +58,135 @@
     <a href="../index.html">Home</a>
 
     <h2>Dataset Information</h2>
-    <p>For this exercise, we will use data from the
-        <a href="https://www.thecocktaildb.com/api.php">CocktailDB API</a>.
-        Specifically we will use the "Filter by alcoholic" endpoint to fetch a list of non-alcoholic drinks.
-        Consult the API documentation to learn more.
-    </p>
+    <p>For this exercise, we will use data from the <a href="https://www.thecocktaildb.com/api.php" target="_blank" rel="noopener noreferrer">CocktailDB API</a>. Specifically we will use the "Filter by alcoholic" endpoint to fetch a list of non-alcoholic drinks. Consult the API documentation to learn more.</p>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing (Console)</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to answer the questions below. Log each of the answers to the console.
         <ol type="A">
-            <li>Consult the API documentation to learn which URL to use to fetch information about non-alcoholic drinks.
-                Store the URL in a variable called <code>requestURL</code>.
-                <strong>HINT:</strong> ensure your URL begins with "http://" or "https://".
-            </li>
+            <li>Consult the API documentation to learn which URL to use to fetch information about non-alcoholic drinks. Store the URL in <code>requestURL</code>.</li>
             <li>Fetch the data using the specified URL.</li>
-            <li>Display the number of non-alcoholic drinks (i.e. 58).</li>
-            <li>Loop through the drinks, and display the name and unique identifier of each.</li>
+            <li>Display the number of non-alcoholic drinks.</li>
+            <li>Loop through the drinks, and display the name (<code>strDrink</code>) and unique identifier (<code>idDrink</code>) of each.</li>
         </ol>
     </p>
 
-
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Drinks</h2>
     <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
+        Write JavaScript code to answer the questions below. Display the answers on the page in the designated areas.
     </p>
-
     <ol type="A">
-        <li>Using the designated <code>span</code> element below, display the number of drinks (i.e. 58).</li>
-        <li>Loop through the drinks, and display the name and image for each.
-            Using the provided <code>div</code> element below,
-            create a new child <code>div</code> element for each drink.
-            The child <code>div</code> element should contain a <code>p</code> tag to display the drink name,
-            and an <code>img</code> tag to display the image (using an image height of 100px).
-        </li>
-
+        <li>Using the designated <code>span</code> element, display the number of drinks.</li>
+        <li>Loop through the drinks, and display the name (<code>strDrink</code>) and image (<code>strDrinkThumb</code>) for each. Using the provided <code>div</code> element, create a new child <code>div</code> for each drink. The child <code>div</code> should contain a <code>p</code> tag for the name and an <code>img</code> tag for the image (height 100px).</li>
     </ol>
 
     <hr>
     <h2>Display</h2>
 
-    <p>Drinks: <span id="display-drinks-count">TODO</span></p>
+    <p>Drinks Found: <span id="display-drinks-count">Loading...</span></p>
     <div id="display-drinks">
-    </div>
-
-
-
+        <p>Loading drinks...</p> </div>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script type="text/javascript">
 
-        var requestUrl = "TODO"
+        // A: Define the request URL for non-alcoholic drinks
+        // From CocktailDB API docs: Filter by Alcoholic: www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic
+        const requestUrl = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic";
+        console.log("Request URL:", requestUrl);
 
-        d3.json(requestUrl).then(function(data){
-            console.log("DATA:", data)
+        // Get references to DOM elements
+        const drinksCountSpan = document.getElementById('display-drinks-count');
+        const drinksContainer = document.getElementById('display-drinks');
 
+        // B: Fetch data using d3.json
+        d3.json(requestUrl).then(function(data) {
+            console.log("API Response:", data);
 
-            console.log("---------------------")
-            console.log("PART 1...")
+            // Check if data and the drinks array exist
+            if (!data || !data.drinks) {
+                 // The API might return null for drinks if none are found or an error occurs
+                 console.warn("No drinks data received or data structure is unexpected.");
+                 drinksCountSpan.textContent = "0";
+                 drinksContainer.innerHTML = '<p class="error-message">Could not load drinks data.</p>';
+                 // Throwing an error might be too harsh if the API just returns empty results correctly
+                 // throw new Error("Invalid data structure received from CocktailDB API.");
+                 return; // Stop execution for this block
+            }
 
+            const drinks = data.drinks; // Access the array of drinks
 
+            // --- PART 1: Console Logging ---
+            console.log("---------------------");
+            console.log("PART 1: Processing Drinks Data (Console)");
 
+            // C: Display the number of non-alcoholic drinks
+            const numberOfDrinks = drinks.length;
+            console.log(`C. Number of non-alcoholic drinks: ${numberOfDrinks}`);
 
+            // D: Loop through drinks, display name and ID
+            console.log("D. Drink Names and IDs:");
+            drinks.forEach(drink => {
+                console.log(`   - ${drink.strDrink} (ID: ${drink.idDrink})`);
+            });
 
-            console.log("---------------------")
-            console.log("PART 2...")
+            // --- PART 2: Displaying Drinks on Page ---
+            console.log("---------------------");
+            console.log("PART 2: Populating Drinks Display");
 
+            // A: Display the number of drinks on the page
+            drinksCountSpan.textContent = numberOfDrinks;
 
+            // Clear the initial "Loading..." message
+            drinksContainer.innerHTML = '';
 
+            // B: Loop through drinks and display name/image
+            if (numberOfDrinks > 0) {
+                drinks.forEach(drink => {
+                    // Create the container div for each drink
+                    const drinkDiv = document.createElement('div');
+                    drinkDiv.classList.add('drink-item'); // Add class for styling
 
-        })
+                    // Create the paragraph for the drink name
+                    const nameP = document.createElement('p');
+                    nameP.textContent = drink.strDrink;
+                    nameP.title = drink.strDrink; // Show full name on hover if truncated
+
+                    // Create the image element
+                    const img = document.createElement('img');
+                    img.src = drink.strDrinkThumb; // URL for the thumbnail image
+                    img.alt = drink.strDrink; // Alt text
+                    // img.style.height = '100px'; // Set height via CSS instead for better practice
+
+                    // Add error handling for broken images
+                    img.onerror = function() {
+                        console.warn(`Image failed to load: ${drink.strDrinkThumb}`);
+                        this.alt = `${drink.strDrink} (Image not available)`;
+                        // Optional: Replace with a placeholder image or hide
+                        this.src = `https://placehold.co/100x100/eee/ccc?text=No+Image`;
+                    };
+
+                    // Append name and image to the drink div
+                    drinkDiv.appendChild(img); // Image first visually
+                    drinkDiv.appendChild(nameP);
+
+                    // Append the drink div to the main container
+                    drinksContainer.appendChild(drinkDiv);
+                });
+                console.log("Part 2B: Drinks display populated.");
+            } else {
+                // Handle case where no drinks were returned
+                drinksContainer.innerHTML = '<p>No non-alcoholic drinks found.</p>';
+                console.log("Part 2B: No drinks to display.");
+            }
+
+        }).catch(function(error) {
+            // Handle errors during the fetch/parse process
+            console.error("Error fetching or processing drinks data:", error);
+            // Display error message to the user
+            drinksCountSpan.textContent = "Error";
+            drinksContainer.innerHTML = `<p class="error-message">Could not load drinks data: ${error.message}</p>`;
+        });
 
     </script>
 </body>

@@ -1,61 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rideshare</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Styling for Part 2 Display */
+        #rideshare-app {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            margin-top: 15px;
+        }
+        #rideshare-app p { margin: 5px 0 10px 0; }
+        #rideshare-app span { font-weight: bold; color: #333; }
+        #display-passengers {
+            margin-left: 20px;
+            padding-left: 15px; /* Indent list items */
+        }
+         #display-passengers li {
+             margin-bottom: 5px; /* Space between passenger names */
+             color: #555;
+         }
+    </style>
 </head>
 <body>
 
     <h1>Rideshare</h1>
     <a href="../index.html">Home</a>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing</h2>
     <p>
-        Write JavaScript code to process the provided <code>rideshare</code> variable to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to process the provided <code>rideshare</code> variable (named <code>trip</code> in the code) to answer the questions below. Log each of the answers to the console.
         <ol type="A">
             <li>Display a human-friendly message to denote the driver's first name (i.e. "Your driver is Danny").</li>
             <li>Display the license plate number (i.e. "ABC-1234").</li>
             <li>Display the number of stops this trip makes (i.e. 3).</li>
             <li>Display the destination of the first stop (i.e. "Logan Circle").</li>
-            <li>Display the destination of the last stop (i.e. "Washington Circle"). <strong>NOTE:</strong> your solution should work regardless of how many stops there are (i.e. should reference the last item dynamically, not assume the third stop is necessarily the last).</li>
-            <li>Loop through each of the stops and display that stop's passenger name, one at a time (i.e. "Vishal", then "Clara", then "Lee", each on a separate line).</li>
-            <li>Use a mapping operation to arrive at an array of just the numeric fare values, store them in a variable called <code>fares</code>, and display them. </li>
-            <li>Calculate and display the total fare for the entire trip, which is equal to the sum of all the fares for all passengers.
-                Format the total fare as USD, with a dollar sign and rounded to two decimal places.
-                <strong>HINT:</strong> use an accumulator approach in conjunction with Question G,
-                    or use the <a href="https://d3js.org/d3-array/summarize#sum"><code>d3.sum()</code> function</a>
-                    from the <code>d3-array</code> library.
-            </li>
+            <li>Display the destination of the last stop (i.e. "Washington Circle"). <strong>NOTE:</strong> your solution should work regardless of how many stops there are.</li>
+            <li>Loop through each of the stops and display that stop's passenger name, one at a time.</li>
+            <li>Use a mapping operation to arrive at an array of just the numeric fare values, store them in a variable called <code>fares</code>, and display them.</li>
+            <li>Calculate and display the total fare for the entire trip. Format the total fare as USD. <strong>HINT:</strong> use <code>d3.sum()</code> or an accumulator.</li>
         </ol>
     </p>
 
     <hr>
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Trip Info</h2>
     <p>
-        Write JavaScript code to process the provided <code>rideshare</code> variable to answer the questions below.
-        Display the answers on the page in the designated places.
+        Write JavaScript code to process the provided <code>rideshare</code> variable (<code>trip</code>) to answer the questions below. Display the answers on the page in the designated places.
         <ol type="A">
             <li>Display the driver's first name. Use the designated <code>span</code> element.</li>
             <li>Display the vehicle's make, model, and license plate number. Use the designated <code>span</code> element.</li>
-            <li>Loop through each of the stops and display that stop's passenger name, one at a time (i.e. "Vishal", then "Clara", then "Lee", each in a separate list item).
-                Use the designated <code>ol</code> element.</li>
-            </li>
+            <li>Loop through each of the stops and display that stop's passenger name, one at a time, in the designated <code>ol</code> element.</li>
         </ol>
     </p>
 
-
     <div id="rideshare-app">
-
-        <p>Driver: <span id="display-driver">TODO</span></p>
-
-        <p>Vehicle: <span id="display-vehicle">TODO</span></p>
-
-        <p>Passengers:</p>
+        <p>Driver: <span id="display-driver"></span></p> <p>Vehicle: <span id="display-vehicle"></span></p> <p>Passengers:</p>
         <ol id="display-passengers">
-        </ol>
+            </ol>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
@@ -82,21 +93,116 @@
                 {"sequence": 2, "passenger": "Clara", "destination": "Dupont Circle", "fare": 7.99},
                 {"sequence": 3, "passenger": "Lee", "destination": "Washington Circle", "fare": 9.99}
             ]
+        }; // Added semicolon
+
+        /**
+         * Formats a numeric price into a USD string (e.g., $12.34).
+         * @param {number} price - The numeric price to format.
+         * @returns {string} The price formatted as USD currency.
+         */
+         function formatUSD(price) {
+            const numericPrice = Number(price);
+            if (isNaN(numericPrice)) { return "$NaN"; }
+            return `$${numericPrice.toFixed(2)}`;
         }
 
-        console.log("---------------------")
-        console.log("PART 1...")
+
+        console.log("---------------------");
+        console.log("PART 1: Processing Rideshare Data");
+
+        // A: Display driver's first name message
+        console.log(`A. Your driver is ${trip.driver.first_name}`);
+
+        // B: Display license plate number
+        console.log(`B. License Plate: ${trip.vehicle.licensePlate}`);
+
+        // C: Display the number of stops
+        const numberOfStops = trip.stops.length;
+        console.log(`C. Number of Stops: ${numberOfStops}`);
+
+        // D: Display the destination of the first stop (index 0)
+        // Check if stops exist to prevent errors
+        if (numberOfStops > 0) {
+            console.log(`D. First Stop Destination: ${trip.stops[0].destination}`);
+        } else {
+            console.log("D. First Stop Destination: N/A (no stops)");
+        }
 
 
+        // E: Display the destination of the last stop dynamically
+        if (numberOfStops > 0) {
+            // Access the last element using index length - 1
+            console.log(`E. Last Stop Destination: ${trip.stops[numberOfStops - 1].destination}`);
+        } else {
+             console.log("E. Last Stop Destination: N/A (no stops)");
+        }
+
+        // F: Loop through stops and display passenger names
+        console.log("F. Passengers:");
+        if (numberOfStops > 0) {
+            trip.stops.forEach(stop => {
+                console.log(`   - ${stop.passenger}`);
+            });
+        } else {
+             console.log("   - No passengers");
+        }
 
 
+        // G: Use map to get an array of fare values
+        const fares = trip.stops.map(stop => stop.fare);
+        console.log("G. Array of Fares:", fares);
 
-        console.log("---------------------")
-        console.log("PART 2...")
+        // H: Calculate and display the total fare using d3.sum
+        let totalFare = 0;
+        if (fares.length > 0) {
+             totalFare = d3.sum(fares);
+             console.log(`H. Total Fare: ${formatUSD(totalFare)}`);
+        } else {
+             console.log("H. Total Fare: $0.00 (no fares)");
+        }
+        // Alternative using Array.reduce:
+        // const totalFareReduce = fares.reduce((accumulator, currentFare) => accumulator + currentFare, 0);
+        // console.log(`H. Total Fare (using reduce): ${formatUSD(totalFareReduce)}`);
 
 
+        console.log("---------------------");
+        console.log("PART 2: Populating Rideshare Display");
 
+        // Get references to the display elements
+        const driverSpan = document.getElementById('display-driver');
+        const vehicleSpan = document.getElementById('display-vehicle');
+        const passengersList = document.getElementById('display-passengers');
 
+        // Clear any previous content (good practice)
+        driverSpan.textContent = '';
+        vehicleSpan.textContent = '';
+        passengersList.innerHTML = ''; // Clear list items
+
+        // A: Display driver's first name
+        driverSpan.textContent = trip.driver.first_name;
+
+        // B: Display vehicle make, model, and license plate
+        vehicleSpan.textContent = `${trip.vehicle.make} ${trip.vehicle.model} (${trip.vehicle.licensePlate})`;
+
+        // C: Loop through stops and add passenger names to the ordered list
+        if (trip.stops.length > 0) {
+            trip.stops.forEach(stop => {
+                // Create a new list item element (li)
+                const listItem = document.createElement('li');
+                // Set its text content to the passenger's name
+                listItem.textContent = stop.passenger;
+                // Append the list item to the ordered list (ol)
+                passengersList.appendChild(listItem);
+            });
+        } else {
+            // Handle case with no passengers
+             const listItem = document.createElement('li');
+             listItem.textContent = "No passengers on this trip.";
+             listItem.style.fontStyle = "italic"; // Optional styling
+             passengersList.appendChild(listItem);
+        }
+
+        console.log("Part 2: Rideshare display populated successfully.");
 
     </script>
 

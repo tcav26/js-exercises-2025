@@ -1,20 +1,59 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        ol[type="A"] { list-style-type: upper-alpha; }
+        hr { margin: 20px 0; border: 0; border-top: 1px solid #eee; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        /* Product display styling */
+        #display-products .product {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            overflow: hidden; /* Clear floats if any */
+        }
+        #display-products .product img {
+            max-width: 100%; /* Make images responsive */
+            height: auto;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: block; /* Prevent extra space below image */
+        }
+        #display-products .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+         #display-products .product-desc {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+         #display-products .product-price {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #28a745; /* Green for price */
+        }
+    </style>
 </head>
 <body>
 
     <h1>Products</h1>
     <a href="../index.html">Home</a>
 
-    <h2>Part 1</h2>
+    <h2>Part 1: Data Processing</h2>
     <p>
-        Write JavaScript code to process the provided <code>products</code> variable to answer the questions below.
-        Log each of the answers to the console.
-
+        Write JavaScript code to process the provided <code>products</code> variable to answer the questions below. Log each of the answers to the console.
         <ol type="A">
             <li>Display the total number of products (i.e. 3).</li>
             <li>Loop through each product and display their name and price, each on a new line.</li>
@@ -24,13 +63,9 @@
     </p>
 
     <hr>
-    <h2>Part 2</h2>
+    <h2>Part 2: Displaying Products</h2>
     <p>
-        Write JavaScript to programmatically populate the provided <code>div</code> element with information about each product.
-        Specifically, the top-level <code>div</code> should contain a new child <code>div</code> element for each product (i.e. the product-specific <code>div</code>).
-        Each product-specific <code>div</code> element should contain separate <code>p</code> tags to display the product's name, description, and price, respectively;
-        as well as an <code>img</code> tag to display the image of that product;
-        and finally a <code>hr</code> element to produce a horizontal line separator between each of the products.
+        Write JavaScript to programmatically populate the provided <code>div</code> element with information about each product. Specifically, the top-level <code>div</code> should contain a new child <code>div</code> element for each product (i.e. the product-specific <code>div</code>). Each product-specific <code>div</code> element should contain separate <code>p</code> tags to display the product's name, description, and price, respectively; as well as an <code>img</code> tag to display the image of that product; and finally a <code>hr</code> element to produce a horizontal line separator between each of the products.
     </p>
 
     <div id="display-products"></div>
@@ -43,35 +78,124 @@
                 "name": "Textbook",
                 "description": "It has all the answers.",
                 "price": 129.99,
-                "imageURL": "https://picsum.photos/id/24/360/200"
+                "imageURL": "https://picsum.photos/id/24/360/200" // Example image
             },
             {
                 "name": "Cup of Tea",
                 "description": "An individually-prepared tea or coffee of choice.",
                 "price": 3.49,
-                "imageURL": "https://picsum.photos/id/225/360/200"
+                "imageURL": "https://picsum.photos/id/225/360/200" // Example image
             },
             {
                 "name": "Strawberries",
                 "description": "Juicy organic strawberries.",
                 "price": 4.99,
-                "imageURL": "https://picsum.photos/id/1080/360/200"
+                "imageURL": "https://picsum.photos/id/1080/360/200" // Example image
             }
-        ]
+            // Example product with potentially invalid image URL for testing fallback
+            // ,{
+            //     "name": "Broken Image Product",
+            //     "description": "This image might not load.",
+            //     "price": 19.99,
+            //     "imageURL": "https://invalid-url-that-does-not-exist.xyz/image.jpg"
+            // }
+        ]; // Added semicolon
 
-        console.log("---------------------")
-        console.log("PART 1...")
+        console.log("---------------------");
+        console.log("PART 1: Processing Product Data");
+
+        // A: Display the total number of products
+        const totalProducts = products.length;
+        console.log(`A. Total number of products: ${totalProducts}`);
+
+        // B: Loop through each product and display name and price
+        console.log("B. Product Names and Prices:");
+        products.forEach(product => {
+            // Format price using toFixed(2)
+            console.log(`   - ${product.name}: $${product.price.toFixed(2)}`);
+        });
+
+        // C: Filter products with price less than $50
+        const matchingProducts = products.filter(product => product.price < 50);
+        // Note: The matchingProducts variable now holds the filtered array.
+        // We don't necessarily need to log the whole array here unless desired.
+        console.log("C. Filtering complete. Products with price < $50 stored in 'matchingProducts'.");
 
 
+        // D: Display the total number of matching products
+        const numberOfMatchingProducts = matchingProducts.length;
+        console.log(`D. Total number of matching products (< $50): ${numberOfMatchingProducts}`);
+        // Optional: Log the names of matching products
+        console.log("   Matching products:", matchingProducts.map(p => p.name).join(', '));
 
 
+        console.log("---------------------");
+        console.log("PART 2: Populating Product Display");
 
+        // Get reference to the main container div
+        const productsContainer = document.getElementById('display-products');
 
-        console.log("---------------------")
-        console.log("PART 2...")
+        // Clear any existing content (good practice)
+        productsContainer.innerHTML = '';
 
+        // Check if there are products to display
+        if (products.length === 0) {
+            productsContainer.textContent = "No products to display.";
+        } else {
+            // Loop through each product in the array
+            products.forEach((product, index) => {
+                // 1. Create a container div for this product
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product'); // Add class for styling
 
+                // 2. Create and append the product name paragraph
+                const nameP = document.createElement('p');
+                nameP.classList.add('product-name'); // Add class for styling
+                nameP.textContent = product.name;
+                productDiv.appendChild(nameP);
 
+                // 3. Create and append the product description paragraph
+                const descP = document.createElement('p');
+                descP.classList.add('product-desc'); // Add class for styling
+                descP.textContent = product.description;
+                productDiv.appendChild(descP);
+
+                // 4. Create and append the product price paragraph
+                const priceP = document.createElement('p');
+                priceP.classList.add('product-price'); // Add class for styling
+                // Format price as USD currency
+                priceP.textContent = `$${product.price.toFixed(2)}`;
+                productDiv.appendChild(priceP);
+
+                // 5. Create and append the product image element
+                if (product.imageURL) { // Only add image if URL exists
+                    const img = document.createElement('img');
+                    img.src = product.imageURL;
+                    img.alt = product.name; // Set alt text for accessibility
+                    // Add an error handler for broken images
+                    img.onerror = function() {
+                        // Replace with a placeholder or hide the image
+                        console.warn(`Image failed to load: ${product.imageURL}`);
+                        this.alt = `${product.name} (Image not available)`;
+                        // Optional: Set a placeholder image source
+                        this.src = `https://placehold.co/360x200/eee/ccc?text=Image+Not+Available`;
+                        // Or hide the element: this.style.display = 'none';
+                    };
+                    productDiv.appendChild(img);
+                }
+
+                // 6. Append the completed product div to the main container
+                productsContainer.appendChild(productDiv);
+
+                // 7. Add a horizontal rule (<hr>) after each product *except* the last one
+                if (index < products.length - 1) {
+                    const hr = document.createElement('hr');
+                    productsContainer.appendChild(hr); // Append hr to the main container, not the product div
+                }
+            });
+        }
+
+        console.log("Part 2: Product display populated successfully.");
 
     </script>
 </body>

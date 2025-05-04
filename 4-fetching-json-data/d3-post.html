@@ -2,45 +2,80 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D3 POST Request Example</title>
-    <!-- Include D3 from a CDN -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        h1 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        #status { margin-top: 15px; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #dee2e6; overflow-x: auto; }
+    </style>
   </head>
   <body>
     <h1>D3 POST Request Example</h1>
-    <script>
+    <p>This example sends data to httpbin.org/post using d3.json and displays the response.</p>
 
+    <div id="status">Sending request...</div>
+    <div id="response-data"></div>
+
+    <script>
       // URL of the testing endpoint.
       // httpbin.org is useful since it returns our data as part of the response.
       const url = "https://httpbin.org/post";
-
 
       // Data to be sent in the POST request.
       const postData = {
         name: "Waldo Ma",
         email: "waldo@example.com",
-        age: 75
-      }
+        age: 75,
+        timestamp: new Date().toISOString() // Add a timestamp
+      };
+
+      // Get references to display elements
+      const statusDiv = document.getElementById('status');
+      const responseDataDiv = document.getElementById('response-data');
 
       // Use d3.json to send the POST request.
       // Note: d3.json accepts an options object similar to the Fetch API.
       d3.json(url, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(postData)
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json" // Explicitly accept JSON response
+        },
+        body: JSON.stringify(postData) // Convert JS object to JSON string
       })
       .then(response => {
         // Log the response so you can verify that the server received the data.
-        console.log("SUCCESS!")
-        console.log("Response:", response)
-        // work with the response here
+        console.log("SUCCESS!");
+        console.log("Response:", response);
 
+        // --- Work with the response here ---
+        // Display success message on the page
+        statusDiv.textContent = "Success! Request sent and response received.";
+        statusDiv.className = 'success'; // Apply success styling
 
-
+        // Display the received data (which includes the data we sent)
+        // httpbin returns the sent JSON data under the 'json' key in the response
+        responseDataDiv.innerHTML = `
+          <h3>Response Data Received:</h3>
+          <pre>${JSON.stringify(response, null, 2)}</pre>
+        `; // Use pre for formatted JSON output
       })
       .catch(error => {
-        console.error("Error in POST request:", error)
-      })
+        console.error("Error in POST request:", error);
+
+        // Display error message on the page
+        statusDiv.textContent = `Error: ${error.message}`;
+        statusDiv.className = 'error'; // Apply error styling
+        responseDataDiv.innerHTML = ''; // Clear response data area on error
+      });
+
+      console.log("POST request initiated...");
+
     </script>
   </body>
 </html>
